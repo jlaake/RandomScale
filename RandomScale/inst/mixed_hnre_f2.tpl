@@ -3,16 +3,20 @@ DATA_SECTION
    init_int n;                        // number of distances
    init_int width;                    // truncation width
    init_vector xs(1,n);               // distances
+   init_int m;                        // number of columns in design matrix
+   init_matrix dm(1,n,1,m);           // design matrix for fixed effects
+   int i;
    // Weights applied to the likelhood to obtain normalizing probablity
    // Note that (by mistake) weights run 2,4,6,....
-   vector w(1,2*n+2)
+   vector w(1,4*n)
    !! w=1.0;
-   !! w(2*n+2)=-n;
+   !! for(i=1;i<=n;i++) w(2*n+2*i)=-1;
 	
 PARAMETER_SECTION 
-   init_number beta;                  	// beta parameter for log(sigma);
-   init_number sigeps; 		            // log(sigma_epsilon) for random effect;                
-   random_effects_vector u(1,n+1);      // random effect for scale
+   init_vector beta(1,m);             	// beta parameter for log-sigma;
+   init_number sigeps; 		            // log(sigma) for random effect;                
+   random_effects_vector u(1,2*n);      // random effect for scale; first n for
+                                        // numerator and second for integral
    !!set_multinomial_weights(w);        // weights to substract denominator
    objective_function_value f;        	// negative log-likelihood
 
@@ -27,23 +31,23 @@ PROCEDURE_SECTION
    int j;
    f=0;
    for (j=1;j<=n;j++)                                           // loop over each observation computing numerator
-     ll_j(xs(j),beta,sigeps,u(j));                              // which is the average g(x) integrated over epsilon
-   denom(beta,sigeps,u(n+1));                                   // compute constant denominator which is the average_mu 
-                                                                // integrated over epsilon and weighted by n
+     ll_j(xs(j),beta,sigeps,u(j),dm(j));                        // which is the average g(x) integrated over epsilon
+   for (j=1;j<=n;j++)                                           // loop over each observation computing numerator
+     denom(beta,sigeps,u(n+j),dm(j));                           // compute denominator which is the average_mu jth obs
+                                                                // integrated over epsilon and weighted by -1
 
-SEPARABLE_FUNCTION void ll_j(const double x, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
+SEPARABLE_FUNCTION void ll_j(const double x, const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
    dvariable eps=u*exp(sigeps);                                 // random scale component - N(0,exp(sigeps))
-   dvariable sigma=exp(beta+eps);                               // detection function scale
+   dvariable sigma=exp(dm*beta+eps);                            // detection function scale
    f -= -0.5*square(u)-log(sqrt(2*PI));                         // log of std normal density for epsilon
-   f -= -0.5*square(x/sigma);                                   // log of g(x) for half-normal
+   f -= -log(sqrt(2*PI))-log(sigma)-0.5*square(x/sigma);        // log of f(x) for half-normal
 
-SEPARABLE_FUNCTION void denom(const dvariable& beta,const dvariable& sigeps,const dvariable& u)
+SEPARABLE_FUNCTION void denom(const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
    dvariable eps=u*exp(sigeps);                                   // random scale component - N(0,exp(sigeps))
-   dvariable sigma=exp(beta+eps);                                 // detection function scale	
+   dvariable sigma=exp(dm*beta+eps);                              // detection function scale	
    f -= -0.5*square(u)-log(sqrt(2*PI));                           // log of std normal density for epsilon
-   f -= log(sqrt(2*PI)*sigma*(cumd_norm(width/sigma)-0.5)+1e-10); // log of mu for half-normal; uses cumulative normal
-                                                                  // from -Inf to width/sigma - 0.5 = integral from 
-																  // 0 to width/sigma. Adds 1e-10 to avoid log(0)
+   f -= log(1e-10+cumd_norm(width/sigma)-0.5);	                  // cum half std normal
+	
 TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_NVAR_OFFSET(250502); 
   gradient_structure::set_NUM_DEPENDENT_VARIABLES(800);

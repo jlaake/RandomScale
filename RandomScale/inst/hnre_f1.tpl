@@ -4,7 +4,7 @@ DATA_SECTION
    init_vector xs(1,n);               // distances
 PARAMETER_SECTION
    init_number beta;                  // beta parameter for log-sigma;
-   init_number sigeps;                // log sigma for random effect;             
+   init_number sigeps;                // log(sigma_epsilon) for random effect;             
    random_effects_vector u(1,n);      // random effect for scale
    objective_function_value f;        // negative log-likelihood
 
@@ -12,16 +12,15 @@ PROCEDURE_SECTION
    int j;
 // loop over each observation computing sum of log-likelihood values
    f=0;
-   for (j=1;j<=n;j++)
-   {
-      ll_j(j,beta,sigeps,u(j));
-   }  
+   for (j=1;j<=n;j++)                          // loop over each observation computing log-likelihood
+      ll_j(xs(j),beta,sigeps,u(j));
+  
 
-SEPARABLE_FUNCTION void ll_j(const int j, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
-   dvariable eps=u*exp(sigeps);
-   dvariable sigma=exp(beta+eps);
-   f -= -0.5*square(u)-log(sqrt(2*PI));  
-   f -= -log(sigma*sqrt(2*PI)*(cumd_norm(width/sigma)-.5)) - 0.5*square(xs(j)/sigma);  
+SEPARABLE_FUNCTION void ll_j(const double x, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
+   dvariable eps=u*exp(sigeps);                                                     // random scale component - N(0,exp(sigeps))
+   dvariable sigma=exp(beta+eps);                                                   // detection function scale
+   f -= -0.5*square(u)-log(sqrt(2*PI));                                             // log of std normal density for epsilon
+   f -= -log(sigma*sqrt(2*PI)*(cumd_norm(width/sigma)-.5)) - 0.5*square(x/sigma);   // log of f(x) for half-normal
 
 TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_NVAR_OFFSET(250502); 

@@ -2,13 +2,16 @@
 \alias{fitadmb}
 \title{Random Scale Detection Function Fitting with admb}
 \usage{
-  fitadmb(x, w, likelihood = "f2",
+  fitadmb(x, w, formula = ~1, likelihood = "f2",
     extra.args = "-est -gh 10", verbose = FALSE)
 }
 \arguments{
-  \item{x}{vector of observed distances}
+  \item{x}{vector of distances or dataframe containing
+  observed distances (distance) and other covariates}
 
   \item{w}{half-width of strip}
+
+  \item{formula}{formula for scale function}
 
   \item{likelihood}{character string "g","f1","f2"}
 
