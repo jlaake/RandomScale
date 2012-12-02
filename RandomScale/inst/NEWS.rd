@@ -7,6 +7,7 @@
 \section{Changes in version 0.1.0 (2012-12-02)}{
   \itemize{
     \item Addition of mixed effects modeling through ADMB
+    \item Added examples to help
   }
 }
 

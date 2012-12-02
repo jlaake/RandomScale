@@ -25,6 +25,58 @@
   for line transect sampling data. Uses one of 3
   likelihoods. g,f1,f2
 }
+\examples{
+#fit simulated data with random scale
+set.seed(123)
+x=simdata(n=500,w=Inf,beta_eps=-.5)
+par(mfrow=c(1,3))
+glike=fitadmb(x,w=Inf,likelihood="g")
+plotfit(x,w=Inf,c(glike$coeflist[[1]],glike$coeflist[[2]]),nclass=30,
+		main="eq 4 likelihood")
+f2like=fitadmb(x,w=Inf,likelihood="f2")
+param=c(f2like$coeflist[[1]],f2like$coeflist[[2]])
+plotfit(x,w=Inf,c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+		main="eq 7 likelihood")
+f1like=fitadmb(x,w=Inf,likelihood="f1")
+param=c(f1like$coeflist[[1]],f1like$coeflist[[2]])
+plotfit(x,w=Inf,c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+		main="eq 8 likelihood")
+dev.new()
+par(mfrow=c(1,2))
+#Mixed effect model
+x1=simdata(n=2000,w=50,beta_eps=-.5,beta=2,fixed=FALSE,reject=TRUE)
+x2=simdata(n=1000,w=50,beta_eps=-.5,beta=1,fixed=FALSE,reject=TRUE)
+df=data.frame(covariate=c(rep(0,length(x1)),rep(1,length(x2))),
+		distance=c(x1,x2))
+fwlike=fitadmb(df,w=50,formula=~covariate,likelihood="f2")
+param=c(fwlike$coeflist[[1]],fwlike$coeflist[[2]])
+Nhatwcov=plotfit(df$distance,w=50,
+		par=c(param[1]-exp(2*param[3]),param[2],param[3]),
+		nclass=30,dm=model.matrix(~covariate,df),main="With covariate")
+flike=fitadmb(df,w=50,formula=~1,likelihood="f2")
+param=c(flike$coeflist[[1]],flike$coeflist[[2]])
+Nhatwocov=plotfit(df$distance,w=50,
+		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+		main="Without covariate")
+dev.new()
+par(mfrow=c(2,2))
+param=c(fwlike$coeflist[[1]],fwlike$coeflist[[2]])
+Nhatwcov0=plotfit(df$distance[df$covariate==0],w=50,
+		par=c(param[1]-exp(2*param[3]),param[2],param[3]),
+		nclass=30,dm=model.matrix(~covariate,df[df$covariate==0,]),
+		main="With covariate value=0")
+Nhatwcov1=plotfit(df$distance[df$covariate==1],w=50,
+		par=c(param[1]-exp(2*param[2]),param[2],param[3]),nclass=30,
+		dm=model.matrix(~covariate,df[df$covariate==1,]),
+		main="With covariate value=1")
+param=c(flike$coeflist[[1]],flike$coeflist[[2]])
+Nhatwocov0=plotfit(df$distance[df$covariate==0],w=50,
+		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+		main="Without covariate value=0")
+Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
+		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+		main="Without covariate value=1")
+}
 \author{
   Jeff Laake
 }

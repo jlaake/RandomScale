@@ -11,6 +11,8 @@ Date: 2012-12-02
 Depends:
     R (>= 2.0.0),
     R2admb
+SystemRequirements: ADMB version 11 (\url{http://admb-project.org}) or version
+    10 if TPL files are modified. See ?RandomScale
 Collate:
     'fitdata.r'
     'fx.r'
@@ -21,3 +23,5 @@ Collate:
     'histline.R'
     'fitadmb.r'
     'prepare_admb.r'
+    'RandomScale-package.R'
+    'zzz.r'
