@@ -1426,7 +1426,7 @@ nadjusted beta")
 \end_layout
 
 \begin_layout Standard
-Using the same data we use ADMB to fit models using likelihood equations
+Using the same data, we use ADMB to fit models using likelihood equations
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1465,12 +1465,14 @@ reference "eq:Incorrect likelihood"
 \end_inset
 
 .
- The admb code does not cope with 
-\begin_inset Formula $w=\infty$
+ The results from the R code and ADMB are nearly identical (Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Comparison_table"
+
 \end_inset
 
- so we have set it to twice the largest observed distance.
- 
+).
 \end_layout
 
 \begin_layout Standard
@@ -1489,12 +1491,12 @@ par(mfrow=c(1,3))
 
 \begin_layout Plain Layout
 
-glike=fitadmb(x,w=max(x)*2,likelihood="g")
+glike=fitadmb(x,w=Inf,likelihood="g")
 \end_layout
 
 \begin_layout Plain Layout
 
-plotfit(x,w=max(x),c(glike$coeflist[[1]],glike$coeflist[[2]]),nclass=30,
+plotfit(x,w=Inf,c(glike$coeflist[[1]],glike$coeflist[[2]]),nclass=30,
 \end_layout
 
 \begin_layout Plain Layout
@@ -1504,7 +1506,7 @@ plotfit(x,w=max(x),c(glike$coeflist[[1]],glike$coeflist[[2]]),nclass=30,
 
 \begin_layout Plain Layout
 
-f2like=fitadmb(x,w=max(x)*2,likelihood="f2")
+f2like=fitadmb(x,w=Inf,likelihood="f2")
 \end_layout
 
 \begin_layout Plain Layout
@@ -1514,7 +1516,7 @@ param=c(f2like$coeflist[[1]],f2like$coeflist[[2]])
 
 \begin_layout Plain Layout
 
-plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+plotfit(x,w=Inf,c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 \end_layout
 
 \begin_layout Plain Layout
@@ -1524,7 +1526,7 @@ plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 
 \begin_layout Plain Layout
 
-f1like=fitadmb(x,w=max(x)*2,likelihood="f1")
+f1like=fitadmb(x,w=Inf,likelihood="f1")
 \end_layout
 
 \begin_layout Plain Layout
@@ -1534,7 +1536,7 @@ param=c(f1like$coeflist[[1]],f1like$coeflist[[2]])
 
 \begin_layout Plain Layout
 
-plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+plotfit(x,w=Inf,c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 \end_layout
 
 \begin_layout Plain Layout
@@ -1545,6 +1547,982 @@ plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 \begin_layout Plain Layout
 
 @
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The following is an example of a mixed-effects model that can only be fitted
+ at present with the ADMB code and likelihood eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:f likelihood"
+
+\end_inset
+
+.
+ We simulate data from a population with 2000 objects with a larger scale
+ and 1000 objects with a smaller scale.
+ All objects have the same random effect distribution.
+ We fit a model with and without the covariate to the data to the model.
+ The arguments for plotfit are a little clumsy at present and a more flexible
+ structure will be created.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<fig=TRUE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+x1=simdata(n=2000,w=50,beta_eps=-.5,beta=2,fixed=FALSE,reject=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2=simdata(n=1000,w=50,beta_eps=-.5,beta=1,fixed=FALSE,reject=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+df=data.frame(covariate=c(rep(0,length(x1)),rep(1,length(x2))),
+\end_layout
+
+\begin_layout Plain Layout
+
+    distance=c(x1,x2))
+\end_layout
+
+\begin_layout Plain Layout
+
+fwlike=fitadmb(df,w=50,formula=~covariate,likelihood="f2")
+\end_layout
+
+\begin_layout Plain Layout
+
+param=c(fwlike$coeflist[[1]],fwlike$coeflist[[2]])
+\end_layout
+
+\begin_layout Plain Layout
+
+Nhatwcov=plotfit(df$distance,w=50,
+\end_layout
+
+\begin_layout Plain Layout
+
+            par=c(param[1]-exp(2*param[3]),param[2],param[3]),
+\end_layout
+
+\begin_layout Plain Layout
+
+            nclass=30,dm=model.matrix(~covariate,df),main="With covariate")
+\end_layout
+
+\begin_layout Plain Layout
+
+flike=fitadmb(df,w=50,formula=~1,likelihood="f2")
+\end_layout
+
+\begin_layout Plain Layout
+
+param=c(flike$coeflist[[1]],flike$coeflist[[2]])
+\end_layout
+
+\begin_layout Plain Layout
+
+Nhatwocov=plotfit(df$distance,w=50,
+\end_layout
+
+\begin_layout Plain Layout
+
+            par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+\end_layout
+
+\begin_layout Plain Layout
+
+                 main="Without covariate")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The fit of each model looks similar in the plots but the model with the
+ covariate was clearly better with a delta AIC of 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(-2*flike$loglik-2*2-(-2*fwlike$loglik-2*3),2)}
+\end_layout
+
+\end_inset
+
+.
+ The estimates of abundance (with covariate: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(Nhatwcov,0)}
+\end_layout
+
+\end_inset
+
+ without covariate: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(Nhatwocov,0)}
+\end_layout
+
+\end_inset
+
+) are similar because when the covariate is excluded from the model the
+ variation from the covariates is absorbed into the variance of the random
+ effect which captures unmodeled heterogeneity.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=FALSE,fig=TRUE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfrow=c(2,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+param=c(fwlike$coeflist[[1]],fwlike$coeflist[[2]])
+\end_layout
+
+\begin_layout Plain Layout
+
+Nhatwcov0=plotfit(df$distance[df$covariate==0],w=50,
+\end_layout
+
+\begin_layout Plain Layout
+
+            par=c(param[1]-exp(2*param[3]),param[2],param[3]),
+\end_layout
+
+\begin_layout Plain Layout
+
+            nclass=30,dm=model.matrix(~covariate,df[df$covariate==0,]),
+\end_layout
+
+\begin_layout Plain Layout
+
+             main="With covariate value=0")
+\end_layout
+
+\begin_layout Plain Layout
+
+Nhatwcov1=plotfit(df$distance[df$covariate==1],w=50,
+\end_layout
+
+\begin_layout Plain Layout
+
+             par=c(param[1]-exp(2*param[2]),param[2],param[3]),nclass=30,
+\end_layout
+
+\begin_layout Plain Layout
+
+              dm=model.matrix(~covariate,df[df$covariate==1,]),
+\end_layout
+
+\begin_layout Plain Layout
+
+                  main="With covariate value=1")
+\end_layout
+
+\begin_layout Plain Layout
+
+param=c(flike$coeflist[[1]],flike$coeflist[[2]])
+\end_layout
+
+\begin_layout Plain Layout
+
+Nhatwocov0=plotfit(df$distance[df$covariate==0],w=50,
+\end_layout
+
+\begin_layout Plain Layout
+
+             par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  main="Without covariate value=0")
+\end_layout
+
+\begin_layout Plain Layout
+
+Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
+\end_layout
+
+\begin_layout Plain Layout
+
+             par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+\end_layout
+
+\begin_layout Plain Layout
+
+                  main="Without covariate value=1")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+However, when abundance is estimated for each type of object (with covariate:
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(Nhatwcov0,0)}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(Nhatwcov1,1)}
+\end_layout
+
+\end_inset
+
+; without covariate: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(Nhatwocov0,0)}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(Nhatwocov1,1)}
+\end_layout
+
+\end_inset
+
+) and the plots are shown for each type of object, the importance of including
+ the covariate is obvious.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Comparison_table"
+
+\end_inset
+
+Comparison of random scale model fitting results from R and ADMB using simulated
+ data.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Code
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Likelihood eq
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Log-likelihood
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\beta_{f}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\beta_{g}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+log(
+\begin_inset Formula $\sigma_{\epsilon}$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:g likelihood"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%7.2f",-results_random$model$val)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{ sprintf("%5.3f",results_random$model$par[1])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",results_random$model$par[2])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Incorrect likelihood"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%7.2f",-results_random_wrong$model$val)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",results_random_wrong$model$par[1])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",results_random_wrong$model$par[1]-exp(results_random_wrong$
+model$par[2]*2))}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",results_random_wrong$model$par[2])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ADMB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:g likelihood"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%7.2f",glike$loglik)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+NA
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",glike$coeflist[[1]])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",glike$coeflist[[2]])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ADMB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:f likelihood"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%7.2f",f2like$loglik)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",f2like$coeflist[[1]])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",f2like$coeflist[[1]]-exp(2*f2like$coeflist[[2]]))}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",f2like$coeflist[[2]])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ADMB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Incorrect likelihood"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%7.2f",f1like$loglik)}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",f1like$coeflist[[1]])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",f1like$coeflist[[1]]-exp(2*f2like$coeflist[[2]]))}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{sprintf("%5.3f",f1like$coeflist[[2]])}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
 \end_layout
 
 \end_inset

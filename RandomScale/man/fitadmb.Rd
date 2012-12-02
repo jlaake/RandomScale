@@ -2,14 +2,15 @@
 \alias{fitadmb}
 \title{Random Scale Detection Function Fitting with admb}
 \usage{
-  fitadmb(x, w, formula = ~1, likelihood = "f2",
+  fitadmb(x, w = Inf, formula = ~1, likelihood = "f2",
     extra.args = "-est -gh 10", verbose = FALSE)
 }
 \arguments{
   \item{x}{vector of distances or dataframe containing
   observed distances (distance) and other covariates}
 
-  \item{w}{half-width of strip}
+  \item{w}{half-width of strip; if infinite w routine sets
+  w to 2*max(x)}
 
   \item{formula}{formula for scale function}
 

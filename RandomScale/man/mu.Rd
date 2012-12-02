@@ -16,6 +16,8 @@
 
   \item{par}{parameter vector (beta, beta_eps)}
 
+  \item{dm}{design matrix if one is used}
+
   \item{weps}{range (-weps,weps) for std normal
   integration}
 }

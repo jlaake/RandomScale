@@ -2,7 +2,8 @@
 \alias{plotfit}
 \title{Random Scale Detection Function Plotting}
 \usage{
-  plotfit(x, w, par, nclass = NULL, weps = 5, main = NULL)
+  plotfit(x, w, par, nclass = NULL, weps = 5, dm = NULL,
+    main = NULL)
 }
 \arguments{
   \item{x}{vector of observed distances}
@@ -15,6 +16,8 @@
 
   \item{weps}{range (-weps,weps) used for integration of
   std normal distribution}
+
+  \item{dm}{the design matrix if one was used}
 
   \item{main}{title for plot}
 }

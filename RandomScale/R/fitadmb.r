@@ -5,13 +5,13 @@
 #' 
 #' @export 
 #' @param x vector of distances or dataframe containing observed distances (distance) and other covariates
-#' @param w half-width of strip 
+#' @param w half-width of strip; if infinite w routine sets w to 2*max(x)
 #' @param formula formula for scale function 
 #' @param likelihood character string "g","f1","f2"
 #' @param extra.args for admb run
 #' @param verbose for compile and run
 #' @author Jeff Laake
-fitadmb=function(x,w,formula=~1,likelihood="f2",extra.args="-est -gh 10",verbose=FALSE)
+fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",verbose=FALSE)
 {
 	sdir=system.file(package="RandomScale")
 	if(!likelihood%in%c("g","f1","f2"))stop("incorrect likelihood string")
@@ -36,10 +36,14 @@ fitadmb=function(x,w,formula=~1,likelihood="f2",extra.args="-est -gh 10",verbose
 			x=x$distance
 	}
 	write(length(x),con,append=FALSE)
+	if(w==Inf)w=2*max(x)
 	write(w,con,append=TRUE)
 	write(x,con,ncol=1,append=TRUE)
-	write(ncol(dm),con,append=TRUE)
-	write(t(dm),con,ncol=ncol(dm),append=TRUE)
+	if(formula!=~1)
+	{
+		write(ncol(dm),con,append=TRUE)
+		write(t(dm),con,ncol=ncol(dm),append=TRUE)
+	}
 	close(con)
 	if(!file.exists(paste(tpl,".exe",sep="")))
 	{
