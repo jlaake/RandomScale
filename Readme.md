@@ -24,3 +24,4 @@ library(devtools)
 install_github("RandomScale",user="jlaake",subdir="RandomScale")
 ```
 
+You can download all of the source files in a [single zip](https://github.com/jlaake/RandomScale/archive/master.zip).
