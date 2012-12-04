@@ -16,12 +16,5 @@ For other operating systems see (http://www.admb-project.org/downloads) and
 (http://www.admb-project.org/tools/gcc/). Note that prepare_admb() only works for Windows.
 
 For Windows, the [package binary](https://github.com/downloads/jlaake/RandomScale/RandomScale_0.1.0.zip) can be
-downloaded and within R, use Packages/Install Package from Local Zip. For other operating systems or to install from the source you
-can use the following after installing the devtools package:
-
-```
-library(devtools)
-install_github("RandomScale",user="jlaake",subdir="RandomScale")
-```
-
-You can download all of the source files in a [single zip](https://github.com/jlaake/RandomScale/archive/master.zip).
+downloaded and within R, use Packages/Install Package from Local Zip. For other operating systems download 
+the [source](https://github.com/jlaake/RandomScale/archive/master.zip) and build the package.
