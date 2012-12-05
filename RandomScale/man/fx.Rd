@@ -17,14 +17,11 @@
   \item{par}{parameter vector (beta, beta_eps)}
 
   \item{w}{half-width of transect}
-
-  \item{weps}{range (-weps,weps) for std normal
-  integration}
 }
 \description{
   Half-normal pdf and related functions
 }
 \author{
-  Jeff Laake# pdf - for incorrect likelihood
+  Jeff Laake
 }
 

@@ -1,15 +1,14 @@
 #' Integration of Half-normal detection 
 #' 
-#' @usage mu(eps,w,par)
+#' @usage mu(eps,w,par,dm=NULL)
 #' 
-#'      avg_mu(w,par,weps=5)
+#'      avg_mu(w,par,weps=5,dm=NULL)
 #' @export mu avg_mu
 #' @aliases mu avg_mu       
-#' @param x distance
-#' @param sigma half-normal scale (std deviation)
 #' @param eps std normal deviate
 #' @param par parameter vector (beta, beta_eps)
-#' @param dm design matrix if one is used
+#' @param dm design matrix for fixed effect if one is used
+#' @param w transect half-width
 #' @param weps range (-weps,weps) for std normal integration 
 #' @author Jeff Laake
 mu=function(eps,w,par,dm=NULL)

@@ -27,21 +27,21 @@ PROCEDURE_SECTION
    int j;
    f=0;
    for (j=1;j<=n;j++)                                           // loop over each observation computing numerator
-     ll_j(j,beta,sigeps,u(j));                                  // which is the average g(x) integrated over epsilon
+     ll_j(xs(j),beta,sigeps,u(j));                              // which is the average g(x) integrated over epsilon
    denom(beta,sigeps,u(n+1));                                   // compute constant denominator which is the average_mu 
                                                                 // integrated over epsilon and weighted by n
 
-SEPARABLE_FUNCTION void ll_j(const int j, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
+SEPARABLE_FUNCTION void ll_j(const double x, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
    dvariable eps=u*exp(sigeps);                                 // random scale component - N(0,exp(sigeps))
    dvariable sigma=exp(beta+eps);                               // random scale
    f -= -0.5*square(u)-log(sqrt(2*PI));                         // log of std normal density for epsilon
-   f -= -log(sqrt(2*PI))-log(sigma)-0.5*square(xs(j)/sigma);    // log of f(x) for half-normal
+   f -= -log(sqrt(2*PI))-log(sigma)-0.5*square(x/sigma);        // log of f(x) for half-normal
 
 SEPARABLE_FUNCTION void denom(const dvariable& beta,const dvariable& sigeps,const dvariable& u)
    dvariable eps=u*exp(sigeps);                                   // random scale component - N(0,exp(sigeps))
    dvariable sigma=exp(beta+eps);                                 // random scale	
    f -= -0.5*square(u)-log(sqrt(2*PI));                           // log of std normal density for epsilon
-   f -= log(1e-10+cumd_norm(width/sigma)-0.5);	                  // Before Jeff pointed out that he wanted g(x)
+   f -= log(1e-10+cumd_norm(width/sigma)-0.5);	                  // log of integral of f(x)
 	
 TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_NVAR_OFFSET(250502); 

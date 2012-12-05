@@ -89,11 +89,11 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 	write(length(x),con,append=FALSE)
 	if(w==Inf)w=2*max(x)
 	write(w,con,append=TRUE)
-	write(x,con,ncol=1,append=TRUE)
+	write(x,con,ncolumns=1,append=TRUE)
 	if(formula!=~1)
 	{
 		write(ncol(dm),con,append=TRUE)
-		write(t(dm),con,ncol=ncol(dm),append=TRUE)
+		write(t(dm),con,ncolumns=ncol(dm),append=TRUE)
 	}
 	close(con)
 	if(!file.exists(paste(tpl,".exe",sep="")))

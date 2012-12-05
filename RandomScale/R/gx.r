@@ -2,15 +2,16 @@
 #' 
 #' @usage gx(x,sigma)
 #' 
-#'        gx.eps(x,eps,par)
+#'        gx.eps(x,eps,par,dm=NULL)
 #' 
-#'        avg_gx(x,par,weps=5)
+#'        avg_gx(x,par,weps=5,dm=NULL)
 #' @export gx gx.eps avg_gx
 #' @aliases gx gx.eps avg_gx       
 #' @param x distance
 #' @param sigma half-normal scale (std deviation)
 #' @param eps std normal deviate
 #' @param par parameter vector (beta, beta_eps)
+#' @param dm design matrix for fixed effect parameters if one is used
 #' @param weps range (-weps,weps) for std normal integration 
 #' @author Jeff Laake
 # Half-normal detection function

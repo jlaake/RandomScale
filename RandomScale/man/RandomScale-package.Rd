@@ -20,8 +20,8 @@
 
   To install ADMB, you need to install a C++ compiler as
   well as ADMB. We suggest that you install gcc. To use the
-  built-in links, admb should be installed to c:\admb and
-  the gcc compiler to c:\mingw. To use different locations
+  built-in links, admb should be installed to c:\\admb and
+  the gcc compiler to c:\\mingw. To use different locations
   you'll need to change function prepare_admb in the
   package which is run when the package is attached.
 

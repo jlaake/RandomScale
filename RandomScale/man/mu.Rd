@@ -3,20 +3,18 @@
 \alias{mu}
 \title{Integration of Half-normal detection}
 \usage{
-  mu(eps,w,par)
+  mu(eps,w,par,dm=NULL)
 
-  avg_mu(w,par,weps=5)
+  avg_mu(w,par,weps=5,dm=NULL)
 }
 \arguments{
-  \item{x}{distance}
-
-  \item{sigma}{half-normal scale (std deviation)}
-
   \item{eps}{std normal deviate}
 
   \item{par}{parameter vector (beta, beta_eps)}
 
-  \item{dm}{design matrix if one is used}
+  \item{dm}{design matrix for fixed effect if one is used}
+
+  \item{w}{transect half-width}
 
   \item{weps}{range (-weps,weps) for std normal
   integration}

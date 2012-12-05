@@ -11,8 +11,8 @@
 #' @param eps std normal deviate
 #' @param par parameter vector (beta, beta_eps)
 #' @param w half-width of transect
-#' @param weps range (-weps,weps) for std normal integration 
-#' @author Jeff Laake# pdf - for incorrect likelihood 
+#' @author Jeff Laake
+# pdf - for incorrect likelihood 
 fx=function(x,sigma,w)
 {
 	mu=sigma*sqrt(2*pi)*(pnorm(w,0,sigma)-.5)

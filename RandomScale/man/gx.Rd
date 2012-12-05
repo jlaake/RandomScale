@@ -6,9 +6,9 @@
 \usage{
   gx(x,sigma)
 
-  gx.eps(x,eps,par)
+  gx.eps(x,eps,par,dm=NULL)
 
-  avg_gx(x,par,weps=5)
+  avg_gx(x,par,weps=5,dm=NULL)
 }
 \arguments{
   \item{x}{distance}
@@ -18,6 +18,9 @@
   \item{eps}{std normal deviate}
 
   \item{par}{parameter vector (beta, beta_eps)}
+
+  \item{dm}{design matrix for fixed effect parameters if
+  one is used}
 
   \item{weps}{range (-weps,weps) for std normal
   integration}

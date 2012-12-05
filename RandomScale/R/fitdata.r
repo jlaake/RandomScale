@@ -6,7 +6,8 @@
 #' 
 #' @usage fitdata(x,beta=2,beta_eps=-1,w=Inf,weps=5,
 #'             lower=beta/2,upper=2*beta,wrong=FALSE)
-#' @usage flnl(par,x,w,weps=5,wrong=FALSE)
+#' 
+#'        flnl(par,x,w,weps=5,wrong=FALSE)
 #' 
 #' @aliases fitdata flnl
 #' @export fitdata flnl
@@ -30,7 +31,7 @@
 #' plotfit(x,w=max(x),results_random$model$par,nclass=30,
 #'                 main="eq 4 likelihood")
 #' #Because data are untruncated the estimates from the f1 likelihood 
-#' #results_random_wrong=fitdata(x,w=Inf,beta_eps=-.5,wrong=TRUE)
+#' results_random_wrong=fitdata(x,w=Inf,beta_eps=-.5,wrong=TRUE)
 #' param=results_random_wrong$model$par
 #' plotfit(x,w=max(x),param,nclass=30,main="eq 8 likelihood")
 #' plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
