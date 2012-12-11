@@ -98,12 +98,12 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 	close(con)
 	if(!file.exists(paste(tpl,".exe",sep="")))
 	{
-		clean_admb(tpl)
 		if(!file.exists(paste(tpl,".tpl",sep="")))
 			file.copy(file.path(sdir,paste(tpl,".tpl",sep="")),file.path(getwd(),paste(tpl,".tpl",sep="")),overwrite=TRUE)
 		compile_admb(tpl,re=TRUE,verbose=verbose)	
 	}
 	if(!file.exists(paste(tpl,".exe",sep="")))stop("problem with tpl compile")		
+	clean_admb(tpl)
 	run_admb(tpl,extra.args=extra.args,verbose=verbose)
 	results=read_admb(tpl,checkterm=FALSE)
 	return(results)

@@ -1,7 +1,7 @@
 #' Random Scale Detection Function Fitting
 #' 
 #' Fits a half-normal detection function with fixed or random scale for line
-#' transect sampling data. flnl computes negative log-likelihoo used from fitdata
+#' transect sampling data. flnl computes negative log-likelihood used from fitdata
 #' through optim or optimize for fixed effect only.
 #' 
 #' @usage fitdata(x,beta=2,beta_eps=-1,w=Inf,weps=5,
