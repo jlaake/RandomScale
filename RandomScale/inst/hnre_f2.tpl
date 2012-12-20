@@ -10,9 +10,9 @@ DATA_SECTION
    !! w(2*n+2)=-n;
 	
 PARAMETER_SECTION 
-   init_number beta;                  	// beta parameter for log-sigma;
-   init_number sigeps; 		            // log(sigma) for random effect;                
-   random_effects_vector u(1,n+1);      // random effect for scale
+   init_number beta(1);                  	// beta parameter for log-sigma;
+   init_number sigeps(1); 		            // log(sigma) for random effect;                
+   random_effects_vector u(1,n+1,2);      // random effect for scale
    !!set_multinomial_weights(w);        // weights to substract denominator
    objective_function_value f;        	// negative log-likelihood
 
@@ -32,14 +32,14 @@ PROCEDURE_SECTION
                                                                 // integrated over epsilon and weighted by n
 
 SEPARABLE_FUNCTION void ll_j(const double x, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
-   dvariable eps=u*exp(sigeps);                                 // random scale component - N(0,exp(sigeps))
-   dvariable sigma=exp(beta+eps);                               // random scale
+   dvariable eps=u*mfexp(sigeps);                               // random scale component - N(0,exp(sigeps))
+   dvariable sigma=mfexp(beta+eps);                             // random scale
    f -= -0.5*square(u)-log(sqrt(2*PI));                         // log of std normal density for epsilon
    f -= -log(sqrt(2*PI))-log(sigma)-0.5*square(x/sigma);        // log of f(x) for half-normal
 
 SEPARABLE_FUNCTION void denom(const dvariable& beta,const dvariable& sigeps,const dvariable& u)
-   dvariable eps=u*exp(sigeps);                                   // random scale component - N(0,exp(sigeps))
-   dvariable sigma=exp(beta+eps);                                 // random scale	
+   dvariable eps=u*mfexp(sigeps);                                 // random scale component - N(0,exp(sigeps))
+   dvariable sigma=mfexp(beta+eps);                               // random scale	
    f -= -0.5*square(u)-log(sqrt(2*PI));                           // log of std normal density for epsilon
    f -= log(1e-10+cumd_norm(width/sigma)-0.5);	                  // log of integral of f(x)
 	

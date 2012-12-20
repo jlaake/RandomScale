@@ -13,9 +13,9 @@ DATA_SECTION
    !! for(i=1;i<=n;i++) w(2*n+2*i)=-1;
 	
 PARAMETER_SECTION 
-   init_vector beta(1,m);             	// beta parameter for log-sigma;
-   init_number sigeps; 		            // log(sigma) for random effect;                
-   random_effects_vector u(1,2*n);      // random effect for scale; first n for
+   init_vector beta(1,m,1);            	// beta parameter for log-sigma;
+   init_number sigeps(1);	            // log(sigma) for random effect;                
+   random_effects_vector u(1,2*n,2);    // random effect for scale; first n for
                                         // numerator and second for integral
    !!set_multinomial_weights(w);        // weights to substract denominator
    objective_function_value f;        	// negative log-likelihood
@@ -37,14 +37,14 @@ PROCEDURE_SECTION
                                                                 // integrated over epsilon and weighted by -1
 
 SEPARABLE_FUNCTION void ll_j(const double x, const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
-   dvariable eps=u*exp(sigeps);                                 // random scale component - N(0,exp(sigeps))
-   dvariable sigma=exp(dm*beta+eps);                            // detection function scale
+   dvariable eps=u*mfexp(sigeps);                               // random scale component - N(0,exp(sigeps))
+   dvariable sigma=mfexp(dm*beta+eps);                          // detection function scale
    f -= -0.5*square(u)-log(sqrt(2*PI));                         // log of std normal density for epsilon
    f -= -log(sqrt(2*PI))-log(sigma)-0.5*square(x/sigma);        // log of f(x) for half-normal
 
 SEPARABLE_FUNCTION void denom(const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
-   dvariable eps=u*exp(sigeps);                                   // random scale component - N(0,exp(sigeps))
-   dvariable sigma=exp(dm*beta+eps);                              // detection function scale	
+   dvariable eps=u*mfexp(sigeps);                                 // random scale component - N(0,exp(sigeps))
+   dvariable sigma=mfexp(dm*beta+eps);                            // detection function scale	
    f -= -0.5*square(u)-log(sqrt(2*PI));                           // log of std normal density for epsilon
    f -= log(1e-10+cumd_norm(width/sigma)-0.5);	                  // cum half std normal
 	

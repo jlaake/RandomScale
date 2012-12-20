@@ -7,9 +7,10 @@
 #' @param x vector of distances or dataframe containing observed distances (distance) and other covariates
 #' @param w half-width of strip; if infinite w routine sets w to 2*max(x)
 #' @param formula formula for scale function 
-#' @param likelihood character string "g","f1","f2"
+#' @param likelihood character string "g","f1","f2","fixed"
 #' @param extra.args for admb run
 #' @param verbose for compile and run
+#' @param nsteps adromb integration argument; default 8.
 #' @author Jeff Laake
 #' @examples 
 #' #fit simulated data with random scale
@@ -62,35 +63,57 @@
 #' Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
 #' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 #' 		main="Without covariate value=1")
-fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",verbose=FALSE)
+fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",verbose=FALSE,nsteps=8)
 {
 	sdir=system.file(package="RandomScale")
-	if(!likelihood%in%c("g","f1","f2"))stop("incorrect likelihood string")
+	if(!likelihood%in%c("g","f1","f2","fixed"))stop("incorrect likelihood string")
 	if(!file.exists("df1b2gh.cpp"))
 		file.copy(file.path(sdir,"df1b2gh.cpp"),file.path(getwd(),"df1b2gh.cpp"),overwrite=TRUE)
 	if(!file.exists("minfil.cpp"))
 		file.copy(file.path(sdir,"minfil.cpp"),file.path(getwd(),"minfil.cpp"),overwrite=TRUE)
 	if(!file.exists("xmodelm5.cpp"))
 		file.copy(file.path(sdir,"xmodelm5.cpp"),file.path(getwd(),"xmodelm5.cpp"),overwrite=TRUE)
-	if(formula!=~1)
-		tpl="mixed_hnre_f2"
-	else
-	    tpl=paste("hnre_",likelihood,sep="")
+    if(likelihood=="fixed")
+		tpl="distcov"
+    else
+	{
+		if(formula!=~1)
+			tpl="mixed_hnre_f2"
+		else
+			tpl=paste("hnre_",likelihood,sep="")
+	}
 	con=file(paste(tpl,".dat",sep=""),open="wt")
     dm=NULL
 	if(!is.vector(x))
 	{
-		dm=model.matrix(formula,data=x)
 		if(is.null(x$distance))
 			stop("missing distance field")
 		else
+		{
+			if(w<max(x$distance))
+				x=x[x$distance<=w,]
+			dm=model.matrix(formula,data=x)
 			x=x$distance
-	}
-	write(length(x),con,append=FALSE)
+		}
+	} else
+	{
+		if(w<max(x))
+			x=x[x<=w]
+	}		
+	n=length(x)
+	write(n,con,append=FALSE)
 	if(w==Inf)w=2*max(x)
-	write(w,con,append=TRUE)
-	write(x,con,ncolumns=1,append=TRUE)
-	if(formula!=~1)
+	scale=max(x)
+	write(w/scale,con,append=TRUE)
+	write(x/scale,con,ncolumns=1,append=TRUE)
+	if(likelihood=="fixed")
+	{
+		writeLines("1",con)
+		writeLines("1",con)
+		writeLines("2",con)
+		write(nsteps,con,append=TRUE)
+	}
+	if(formula!=~1 | likelihood=="fixed")
 	{
 		write(ncol(dm),con,append=TRUE)
 		write(t(dm),con,ncolumns=ncol(dm),append=TRUE)
@@ -100,11 +123,27 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 	{
 		if(!file.exists(paste(tpl,".tpl",sep="")))
 			file.copy(file.path(sdir,paste(tpl,".tpl",sep="")),file.path(getwd(),paste(tpl,".tpl",sep="")),overwrite=TRUE)
-		compile_admb(tpl,re=TRUE,verbose=verbose)	
+		if(likelihood=="fixed")
+			compile_admb(tpl,verbose=verbose)	
+		else
+		    compile_admb(tpl,re=TRUE,verbose=verbose)	
 	}
 	if(!file.exists(paste(tpl,".exe",sep="")))stop("problem with tpl compile")		
 	clean_admb(tpl)
 	run_admb(tpl,extra.args=extra.args,verbose=verbose)
 	results=read_admb(tpl,checkterm=FALSE)
+	results$coeflist$beta[1]=results$coeflist$beta[1]+log(scale)
+	results$coefficients[1]=results$coefficients[1]+log(scale)
+	results$loglik=results$loglik - n*log(scale)
+	if(likelihood=="fixed")
+	{
+		cnames=paste("scale:",colnames(dm),sep="")
+		names(results$coefficients)=cnames
+		if(!is.null(results$vcov))
+		{
+			rownames(results$vcov)=cnames
+			colnames(results$vcov)=cnames
+		}
+	}
 	return(results)
 }

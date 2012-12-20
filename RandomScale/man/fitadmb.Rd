@@ -10,7 +10,7 @@
   observed distances (distance) and other covariates}
 
   \item{w}{half-width of strip; if infinite w routine sets
-  w to 2*max(x)}
+  w to 10*max(x)}
 
   \item{formula}{formula for scale function}
 
