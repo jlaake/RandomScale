@@ -1,6 +1,8 @@
+// Half normal detection function with random effects
 DATA_SECTION
    init_int n;                        // number of distances
    init_number width;                 // truncation width
+   init_int debug;                    // flag for debugging
    init_vector xs(1,n);               // distances
 PARAMETER_SECTION
    init_number beta(1);               // beta parameter for log-sigma;
@@ -12,8 +14,17 @@ PROCEDURE_SECTION
    int j;
 // loop over each observation computing sum of log-likelihood values
    f=0;
+   if(debug>0)
+   {
+      cout << "beta = " << beta << endl;
+      cout << "sigeps = " << sigeps << endl;
+   }
    for (j=1;j<=n;j++)                          // loop over each observation computing log-likelihood
-      ll_j(xs(j),beta,sigeps,u(j));
+      ll_j(xs(j),beta,sigeps,u(j));   
+	  
+   if(debug>0) 
+      cout << "f = " << f << endl;
+
   
 
 SEPARABLE_FUNCTION void ll_j(const double x, const dvariable& beta,const dvariable& sigeps,const dvariable& u)

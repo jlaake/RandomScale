@@ -1,7 +1,8 @@
-// Truncated half normal detection function with random effects
+// Half normal detection function with random and fixed effects
 DATA_SECTION
    init_int n;                        // number of distances
    init_int width;                    // truncation width
+   init_int debug;                    // flag for debugging
    init_vector xs(1,n);               // distances
    init_int m;                        // number of columns in design matrix
    init_matrix dm(1,n,1,m);           // design matrix for fixed effects
@@ -30,11 +31,19 @@ GLOBALS_SECTION
 PROCEDURE_SECTION
    int j;
    f=0;
+   if(debug>0)
+   {
+      cout << "beta = " << beta << endl;
+      cout << "sigeps = " << sigeps << endl;
+   }
    for (j=1;j<=n;j++)                                           // loop over each observation computing numerator
      ll_j(xs(j),beta,sigeps,u(j),dm(j));                        // which is the average g(x) integrated over epsilon
+    if(debug>0) cout << "f = " << f << endl;
    for (j=1;j<=n;j++)                                           // loop over each observation computing numerator
      denom(beta,sigeps,u(n+j),dm(j));                           // compute denominator which is the average_mu jth obs
                                                                 // integrated over epsilon and weighted by -1
+   if(debug>0) cout << "f = " << f << endl;
+
 
 SEPARABLE_FUNCTION void ll_j(const double x, const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
    dvariable eps=u*mfexp(sigeps);                               // random scale component - N(0,exp(sigeps))

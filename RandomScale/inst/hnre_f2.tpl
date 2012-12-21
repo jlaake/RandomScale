@@ -1,7 +1,8 @@
-// Truncated half normal detection function with random effects
+// Half normal detection function with random effects
 DATA_SECTION
    init_int n;                        // number of distances
    init_int width;                    // truncation width
+   init_int debug;                    // flag for debugging
    init_vector xs(1,n);               // distances
    // Weights applied to the likelhood to obtain normalizing probablity
    // Note that (by mistake) weights run 2,4,6,....
@@ -10,7 +11,7 @@ DATA_SECTION
    !! w(2*n+2)=-n;
 	
 PARAMETER_SECTION 
-   init_number beta(1);                  	// beta parameter for log-sigma;
+   init_bounded_number beta(-3,2,1);                  	// beta parameter for log-sigma;
    init_number sigeps(1); 		            // log(sigma) for random effect;                
    random_effects_vector u(1,n+1,2);      // random effect for scale
    !!set_multinomial_weights(w);        // weights to substract denominator
@@ -26,10 +27,17 @@ GLOBALS_SECTION
 PROCEDURE_SECTION
    int j;
    f=0;
+   if(debug>0)
+   {
+      cout << "beta = " << beta << endl;
+      cout << "sigeps = " << sigeps << endl;
+   }
    for (j=1;j<=n;j++)                                           // loop over each observation computing numerator
      ll_j(xs(j),beta,sigeps,u(j));                              // which is the average g(x) integrated over epsilon
+   if(debug>0)cout << "f = " << f << endl;
    denom(beta,sigeps,u(n+1));                                   // compute constant denominator which is the average_mu 
                                                                 // integrated over epsilon and weighted by n
+   if(debug>0)cout << "f = " << f << endl;
 
 SEPARABLE_FUNCTION void ll_j(const double x, const dvariable& beta,const dvariable& sigeps,const dvariable& u)
    dvariable eps=u*mfexp(sigeps);                               // random scale component - N(0,exp(sigeps))

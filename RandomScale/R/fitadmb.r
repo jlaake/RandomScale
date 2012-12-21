@@ -1,16 +1,26 @@
 #' Random Scale Detection Function Fitting with admb
 #' 
 #' Fits a half-normal detection function with random scale for line
-#' transect sampling data. Uses one of 3 likelihoods. g,f1,f2
+#' transect sampling data. Uses one of 3 likelihoods. g,f1,f2,fixed
+#' 
+#' Beta[1] and bounds for beta[1] are set based on the measured distance scale and
+#' they are adjusted internally by scaling distances such that max(x)=1.
+#' Likewise the likelihood that is shown when debug=T is for scaled distances
+#' but the reported value for the output is adjusted back to the original scale
 #' 
 #' @export 
 #' @param x vector of distances or dataframe containing observed distances (distance) and other covariates
 #' @param w half-width of strip; if infinite w routine sets w to 2*max(x)
 #' @param formula formula for scale function 
+#' @param beta starting values for beta
+#' @param sigma starting value for log sigma
+#' @param bounds 2 by 2 matrix of bounds; row=beta,sigma, col=lower,upper
 #' @param likelihood character string "g","f1","f2","fixed"
 #' @param extra.args for admb run
 #' @param verbose for compile and run
 #' @param nsteps adromb integration argument; default 8.
+#' @param keep if TRUE, uses existing tpl and exe
+#' @param debug if TRUE output parameter and -lnl values during iterations
 #' @author Jeff Laake
 #' @examples 
 #' #fit simulated data with random scale
@@ -63,7 +73,8 @@
 #' Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
 #' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 #' 		main="Without covariate value=1")
-fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",verbose=FALSE,nsteps=8)
+fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,bounds=NULL,likelihood="f2",
+		extra.args="-est -gh 10",verbose=TRUE,nsteps=8,keep=FALSE,debug=FALSE)
 {
 	sdir=system.file(package="RandomScale")
 	if(!likelihood%in%c("g","f1","f2","fixed"))stop("incorrect likelihood string")
@@ -82,6 +93,15 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 		else
 			tpl=paste("hnre_",likelihood,sep="")
 	}
+	if(!keep)
+	{
+		if(file.exists(paste(tpl,".exe",sep=""))) unlink(paste(tpl,".exe",sep=""))
+		if(file.exists(paste(tpl,".tpl",sep=""))) unlink(paste(tpl,".tpl",sep=""))
+	}
+	clean_admb(tpl)
+#####################	
+#   Create DAT file
+#####################
 	con=file(paste(tpl,".dat",sep=""),open="wt")
     dm=NULL
 	if(!is.vector(x))
@@ -105,6 +125,11 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 	if(w==Inf)w=2*max(x)
 	scale=max(x)
 	write(w/scale,con,append=TRUE)
+	if(is.null(bounds))   # bounds not being used currently
+		bounds=matrix(c(-3,3,-8,8),nrow=2,byrow=TRUE)
+	else
+		bounds[1,]=bounds[1,]-log(scale)
+	write(as.numeric(debug),con,append=TRUE)
 	write(x/scale,con,ncolumns=1,append=TRUE)
 	if(likelihood=="fixed")
 	{
@@ -113,12 +138,47 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 		writeLines("2",con)
 		write(nsteps,con,append=TRUE)
 	}
-	if(formula!=~1 | likelihood=="fixed")
+	if((formula!=~1) | (likelihood=="fixed"))
 	{
+		if(is.null(dm))dm=matrix(1,ncol=1,nrow=length(x))
 		write(ncol(dm),con,append=TRUE)
 		write(t(dm),con,ncolumns=ncol(dm),append=TRUE)
+		npar=ncol(dm)
+	}else
+		npar=1
+	close(con)
+#####################	
+#   Create PIN file
+#####################
+	con=file(paste(tpl,".pin",sep=""),open="wt")
+	if(is.null(beta))
+	{
+		beta=log(sqrt(mean((x/scale)^2)))
+		if(formula!=~1)beta=c(beta,rep(0,ncol(dm)))
+	} else
+	{
+		if(length(beta)!=(npar-1))stop("beta not of proper length = ",npar,"\n")
+		beta[1]=beta[1]-log(scale)
+	}
+	write(beta,ncolumns=length(beta),con)
+	if(length(sigma)!=1)stop("sigma not of length 1\n")
+	write(sigma,con,append=TRUE)
+	if(formula!=~1)
+	   write(rep(0,2*length(x)),ncolumns=2*length(x),con,append=TRUE)
+    else
+	{
+		if(likelihood=="f1")
+			write(rep(0,length(x)),ncolumns=length(x),con,append=TRUE)
+		else
+		{
+			if(likelihood!="fixed")
+				write(rep(0,length(x)+1),ncolumns=length(x)+1,con,append=TRUE)
+		}
 	}
 	close(con)
+##################
+# Compile TPL file
+##################
 	if(!file.exists(paste(tpl,".exe",sep="")))
 	{
 		if(!file.exists(paste(tpl,".tpl",sep="")))
@@ -128,9 +188,11 @@ fitadmb=function(x,w=Inf,formula=~1,likelihood="f2",extra.args="-est -gh 10",ver
 		else
 		    compile_admb(tpl,re=TRUE,verbose=verbose)	
 	}
-	if(!file.exists(paste(tpl,".exe",sep="")))stop("problem with tpl compile")		
-	clean_admb(tpl)
-	run_admb(tpl,extra.args=extra.args,verbose=verbose)
+	if(!file.exists(paste(tpl,".exe",sep="")))stop("problem with tpl compile")
+##############################
+# Run program and read results
+##############################
+    run_admb(tpl,extra.args=extra.args,verbose=verbose)
 	results=read_admb(tpl,checkterm=FALSE)
 	results$coeflist$beta[1]=results$coeflist$beta[1]+log(scale)
 	results$coefficients[1]=results$coefficients[1]+log(scale)

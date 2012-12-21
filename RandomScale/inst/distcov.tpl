@@ -1,6 +1,7 @@
 DATA_SECTION
    init_int n;                        // number of distances
    init_number width;                 // truncation half-width of transect
+   init_int debug;                    // flag for debugging
    init_vector xs(1,n);               // distances
    init_int ifct;                     // type of detection function 1=hn, 2=haz
    init_int pt;                       // number of parameter types
@@ -17,6 +18,7 @@ PARAMETER_SECTION
 PROCEDURE_SECTION
    int i, j;
 // Create matrix of real parameter values which is pt rows and n columns
+   if(debug>0)cout << "beta = " << beta << endl;
    for (i=1;i<=pt;i++)
    {
     parmat(i)=reals(dm(i),beta(i),links(i));
@@ -32,9 +34,10 @@ PROCEDURE_SECTION
          f-= log(fct(xs(j))) - log(mu);
 	  } else
 	  {
-	     f-= log(fct(xs(j)))-log(sqrt(2*PI)*par[1]*(cumd_norm(width/par[1])-0.5)+1e-10)
+	     f-= log(fct(xs(j)))-log(sqrt(2*PI)*par[1]*(cumd_norm(width/par[1])-0.5)+1e-10);
 	  }
    }  
+   if(debug>0)cout << "f = " << f << endl;
    
 //////////////////////////////   
 // Computes reals from betas

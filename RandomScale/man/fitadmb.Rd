@@ -2,28 +2,52 @@
 \alias{fitadmb}
 \title{Random Scale Detection Function Fitting with admb}
 \usage{
-  fitadmb(x, w = Inf, formula = ~1, likelihood = "f2",
-    extra.args = "-est -gh 10", verbose = FALSE)
+  fitadmb(x, w = Inf, formula = ~1, beta = NULL,
+    sigma = -3, bounds = NULL, likelihood = "f2",
+    extra.args = "-est -gh 10", verbose = TRUE, nsteps = 8,
+    keep = FALSE, debug = FALSE)
 }
 \arguments{
   \item{x}{vector of distances or dataframe containing
   observed distances (distance) and other covariates}
 
   \item{w}{half-width of strip; if infinite w routine sets
-  w to 10*max(x)}
+  w to 2*max(x)}
 
   \item{formula}{formula for scale function}
 
-  \item{likelihood}{character string "g","f1","f2"}
+  \item{beta}{starting values for beta}
+
+  \item{sigma}{starting value for log sigma}
+
+  \item{bounds}{2 by 2 matrix of bounds; row=beta,sigma,
+  col=lower,upper}
+
+  \item{likelihood}{character string "g","f1","f2","fixed"}
 
   \item{extra.args}{for admb run}
 
   \item{verbose}{for compile and run}
+
+  \item{nsteps}{adromb integration argument; default 8.}
+
+  \item{keep}{if TRUE, uses existing tpl and exe}
+
+  \item{debug}{if TRUE output parameter and -lnl values
+  during iterations}
 }
 \description{
   Fits a half-normal detection function with random scale
   for line transect sampling data. Uses one of 3
-  likelihoods. g,f1,f2
+  likelihoods. g,f1,f2,fixed
+}
+\details{
+  Beta[1] and bounds for beta[1] are set based on the
+  measured distance scale and they are adjusted internally
+  by scaling distances such that max(x)=1. Likewise the
+  likelihood that is shown when debug=T is for scaled
+  distances but the reported value for the output is
+  adjusted back to the original scale
 }
 \examples{
 #fit simulated data with random scale
