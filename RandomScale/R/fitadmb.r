@@ -14,7 +14,6 @@
 #' @param formula formula for scale function 
 #' @param beta starting values for beta
 #' @param sigma starting value for log sigma
-#' @param bounds 2 by 2 matrix of bounds; row=beta,sigma, col=lower,upper
 #' @param likelihood character string "g","f1","f2","fixed"
 #' @param extra.args for admb run
 #' @param verbose for compile and run
@@ -73,7 +72,7 @@
 #' Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
 #' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 #' 		main="Without covariate value=1")
-fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,bounds=NULL,likelihood="f2",
+fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,likelihood="f2",
 		extra.args="-est -gh 10",verbose=TRUE,nsteps=8,keep=FALSE,debug=FALSE)
 {
 	sdir=system.file(package="RandomScale")
@@ -125,10 +124,8 @@ fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,bounds=NULL,likelihood="f
 	if(w==Inf)w=2*max(x)
 	scale=max(x)
 	write(w/scale,con,append=TRUE)
-	if(is.null(bounds))   # bounds not being used currently
-		bounds=matrix(c(-3,3,-8,8),nrow=2,byrow=TRUE)
-	else
-		bounds[1,]=bounds[1,]-log(scale)
+    # these bounds are hard-coded in tpl files
+	bounds=matrix(c(-3,2,-10,1),nrow=2,byrow=TRUE)
 	write(as.numeric(debug),con,append=TRUE)
 	write(x/scale,con,ncolumns=1,append=TRUE)
 	if(likelihood=="fixed")
@@ -194,6 +191,13 @@ fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,bounds=NULL,likelihood="f
 ##############################
     run_admb(tpl,extra.args=extra.args,verbose=verbose)
 	results=read_admb(tpl,checkterm=FALSE)
+	if(formula==~1)
+	{
+		if(abs(results$coeflist$beta[1]-bounds[1,1])<1e-10) warning("beta at lower bound =",bounds[1,1],"\n")
+		if(abs(results$coeflist$beta[1]-bounds[1,2])<1e-10) warning("beta at upper bound =",bounds[1,2],"\n")	
+	}
+	if(abs(results$coeflist$sigeps[1]-bounds[2,1])<1e-10) warning("sigeps at lower bound =",bounds[2,1],"\n")
+	if(abs(results$coeflist$sigeps[1]-bounds[2,2])<1e-10) warning("sigeps at upper bound =",bounds[2,2],"\n")	
 	results$coeflist$beta[1]=results$coeflist$beta[1]+log(scale)
 	results$coefficients[1]=results$coefficients[1]+log(scale)
 	results$loglik=results$loglik - n*log(scale)

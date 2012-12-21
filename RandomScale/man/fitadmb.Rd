@@ -3,7 +3,7 @@
 \title{Random Scale Detection Function Fitting with admb}
 \usage{
   fitadmb(x, w = Inf, formula = ~1, beta = NULL,
-    sigma = -3, bounds = NULL, likelihood = "f2",
+    sigma = -3, likelihood = "f2",
     extra.args = "-est -gh 10", verbose = TRUE, nsteps = 8,
     keep = FALSE, debug = FALSE)
 }
@@ -19,9 +19,6 @@
   \item{beta}{starting values for beta}
 
   \item{sigma}{starting value for log sigma}
-
-  \item{bounds}{2 by 2 matrix of bounds; row=beta,sigma,
-  col=lower,upper}
 
   \item{likelihood}{character string "g","f1","f2","fixed"}
 

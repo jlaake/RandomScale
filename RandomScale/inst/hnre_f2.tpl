@@ -11,9 +11,9 @@ DATA_SECTION
    !! w(2*n+2)=-n;
 	
 PARAMETER_SECTION 
-   init_bounded_number beta(-3,2,1);                  	// beta parameter for log-sigma;
-   init_number sigeps(1); 		            // log(sigma) for random effect;                
-   random_effects_vector u(1,n+1,2);      // random effect for scale
+   init_bounded_number beta(-3,2,1);    // beta parameter for log-sigma;
+   init_bounded_number sigeps(-10,1,1); // log(sigma_epsilon) for random effect;             
+   random_effects_vector u(1,n+1,2);    // random effect for scale
    !!set_multinomial_weights(w);        // weights to substract denominator
    objective_function_value f;        	// negative log-likelihood
 

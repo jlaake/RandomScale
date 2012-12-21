@@ -1,14 +1,14 @@
 // Half normal detection function with random effects
 DATA_SECTION
-   init_int n;                        // number of distances
-   init_number width;                 // truncation width
-   init_int debug;                    // flag for debugging
-   init_vector xs(1,n);               // distances
+   init_int n;                          // number of distances
+   init_number width;                   // truncation width
+   init_int debug;                      // flag for debugging
+   init_vector xs(1,n);                 // distances
 PARAMETER_SECTION
-   init_number beta(1);               // beta parameter for log-sigma;
-   init_number sigeps(1);             // log(sigma_epsilon) for random effect;             
-   random_effects_vector u(1,n,2);    // random effect for scale
-   objective_function_value f;        // negative log-likelihood
+   init_bounded_number beta(-3,2,1);    // beta parameter for log-sigma;
+   init_bounded_number sigeps(-10,1,1); // log(sigma_epsilon) for random effect;             
+   random_effects_vector u(1,n,2);      // random effect for scale
+   objective_function_value f;          // negative log-likelihood
 
 PROCEDURE_SECTION
    int j;
