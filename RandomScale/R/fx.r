@@ -24,4 +24,4 @@ fx.eps=function(eps,x,par,w)
 	sigma=exp(par[1]+eps*exp(par[2]))
 	fx(x,sigma,w)*dnorm(eps,0,1)
 }
-# Average half-normal pdf integrated over distribution of eps
+

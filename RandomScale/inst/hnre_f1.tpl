@@ -6,7 +6,7 @@ DATA_SECTION
    init_vector xs(1,n);                 // distances
 PARAMETER_SECTION
    init_bounded_number beta(-3,2,1);    // beta parameter for log-sigma;
-   init_bounded_number sigeps(-10,1,1); // log(sigma_epsilon) for random effect;             
+   init_bounded_number sigeps(-10,1,2); // log(sigma_epsilon) for random effect;             
    random_effects_vector u(1,n,2);      // random effect for scale
    objective_function_value f;          // negative log-likelihood
 
