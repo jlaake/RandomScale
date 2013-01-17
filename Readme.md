@@ -15,5 +15,6 @@ To use different locations you'll need to change function prepare_admb which is 
 For other operating systems see (http://www.admb-project.org/downloads) and
 (http://www.admb-project.org/tools/gcc/). Note that prepare_admb() only works for Windows.
 
-Github no longer supports the download area, so recent Windows package binaries are no longer available.  Contact me if you want a Windows binary version 
-and are unable to build one.
+Download [Windows package binary](https://docs.google.com/folder/d/0B77g1ScdUwVeOVJNUVVGS0YtWE0/edit). From link, browse to RandomScale and then click on
+the version of the package you want. You should see a listing of the package contents as files.  Select File/Download. 
+To install in R, from the R menu, use Packages\Install from Local Zip file and browse to location of downloaded zip. 
