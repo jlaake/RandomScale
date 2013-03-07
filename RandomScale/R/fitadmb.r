@@ -196,8 +196,11 @@ fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,likelihood="f2",
 		if(abs(results$coeflist$beta[1]-bounds[1,1])<1e-10) warning("beta at lower bound =",bounds[1,1],"\n")
 		if(abs(results$coeflist$beta[1]-bounds[1,2])<1e-10) warning("beta at upper bound =",bounds[1,2],"\n")	
 	}
-	if(abs(results$coeflist$sigeps[1]-bounds[2,1])<1e-10) warning("sigeps at lower bound =",bounds[2,1],"\n")
-	if(abs(results$coeflist$sigeps[1]-bounds[2,2])<1e-10) warning("sigeps at upper bound =",bounds[2,2],"\n")	
+	if(likelihood!="fixed")
+	{
+		if(abs(results$coeflist$sigeps[1]-bounds[2,1])<1e-10) warning("sigeps at lower bound =",bounds[2,1],"\n")
+	    if(abs(results$coeflist$sigeps[1]-bounds[2,2])<1e-10) warning("sigeps at upper bound =",bounds[2,2],"\n")	
+	}
 	results$coeflist$beta[1]=results$coeflist$beta[1]+log(scale)
 	results$coefficients[1]=results$coefficients[1]+log(scale)
 	results$loglik=results$loglik - n*log(scale)

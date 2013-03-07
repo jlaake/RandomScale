@@ -4,6 +4,13 @@
 \title{RandomScale News}
 \encoding{UTF-8}
 
+\section{Changes in version 0.1.4 (2013-3-5)}{
+  \itemize{
+    \item Modified tpl files to use M_PI instead of PI
+    \item Fixed code in fitadmb when likeihood="fixed" was incorrectly testing for sigma
+  }
+}
+
 \section{Changes in version 0.1.3 (2012-12-21)}{
   \itemize{
     \item Modified tpl files to use mfexp and estimation phases; estimation phases are not used for g-likelihood where it caused problems

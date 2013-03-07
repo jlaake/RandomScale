@@ -34,7 +34,7 @@ PROCEDURE_SECTION
          f-= log(fct(xs(j))) - log(mu);
 	  } else
 	  {
-	     f-= log(fct(xs(j)))-log(sqrt(2*PI)*par[1]*(cumd_norm(width/par[1])-0.5)+1e-10);
+	     f-= log(fct(xs(j)))-log(sqrt(2*M_PI)*par[1]*(cumd_norm(width/par[1])-0.5)+1e-10);
 	  }
    }  
    if(debug>0)cout << "f = " << f << endl;

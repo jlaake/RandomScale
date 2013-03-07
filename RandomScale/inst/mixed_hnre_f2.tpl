@@ -48,13 +48,13 @@ PROCEDURE_SECTION
 SEPARABLE_FUNCTION void ll_j(const double x, const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
    dvariable eps=u*mfexp(sigeps);                               // random scale component - N(0,exp(sigeps))
    dvariable sigma=mfexp(dm*beta+eps);                          // detection function scale
-   f -= -0.5*square(u)-log(sqrt(2*PI));                         // log of std normal density for epsilon
-   f -= -log(sqrt(2*PI))-log(sigma)-0.5*square(x/sigma);        // log of f(x) for half-normal
+   f -= -0.5*square(u)-log(sqrt(2*M_PI));                         // log of std normal density for epsilon
+   f -= -log(sqrt(2*M_PI))-log(sigma)-0.5*square(x/sigma);        // log of f(x) for half-normal
 
 SEPARABLE_FUNCTION void denom(const dvar_vector& beta,const dvariable& sigeps,const dvariable& u, const dvector& dm)
    dvariable eps=u*mfexp(sigeps);                                 // random scale component - N(0,exp(sigeps))
    dvariable sigma=mfexp(dm*beta+eps);                            // detection function scale	
-   f -= -0.5*square(u)-log(sqrt(2*PI));                           // log of std normal density for epsilon
+   f -= -0.5*square(u)-log(sqrt(2*M_PI));                           // log of std normal density for epsilon
    f -= log(1e-10+cumd_norm(width/sigma)-0.5);	                  // cum half std normal
 	
 TOP_OF_MAIN_SECTION
