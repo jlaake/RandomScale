@@ -176,16 +176,21 @@ fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,likelihood="f2",
 ##################
 # Compile TPL file
 ##################
-	if(!file.exists(paste(tpl,".exe",sep="")))
+    if(!file.exists(paste(tpl,".tpl",sep="")))
+	    file.copy(file.path(sdir,paste(tpl,".tpl",sep="")),file.path(getwd(),paste(tpl,".tpl",sep="")),overwrite=TRUE)
+    if(!file.exists(paste(tpl,".exe",sep="")))
 	{
-		if(!file.exists(paste(tpl,".tpl",sep="")))
-			file.copy(file.path(sdir,paste(tpl,".tpl",sep="")),file.path(getwd(),paste(tpl,".tpl",sep="")),overwrite=TRUE)
-		if(likelihood=="fixed")
-			compile_admb(tpl,verbose=verbose)	
+		if(file.exists(file.path(sdir,paste(tpl,".exe",sep=""))))
+		   file.copy(file.path(sdir,paste(tpl,".exe",sep="")),file.path(getwd(),paste(tpl,".exe",sep="")),overwrite=TRUE)
 		else
-		    compile_admb(tpl,re=TRUE,verbose=verbose)	
+		{
+		    if(likelihood=="fixed")
+			   compile_admb(tpl,verbose=verbose)	
+		    else
+		       compile_admb(tpl,re=TRUE,verbose=verbose)
+		    if(!file.exists(paste(tpl,".exe",sep="")))stop("problem with tpl compile")
+	   }
 	}
-	if(!file.exists(paste(tpl,".exe",sep="")))stop("problem with tpl compile")
 ##############################
 # Run program and read results
 ##############################
