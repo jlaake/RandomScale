@@ -72,8 +72,8 @@
 #' Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
 #' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
 #' 		main="Without covariate value=1")
-fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=-3,likelihood="f2",
-		extra.args="-est -gh 10",verbose=TRUE,nsteps=8,keep=FALSE,debug=FALSE)
+fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=0,likelihood="f2",
+		extra.args="-gh 10",verbose=TRUE,nsteps=8,keep=FALSE,debug=FALSE)
 {
 	sdir=system.file(package="RandomScale")
 	if(!likelihood%in%c("g","f1","f2","fixed"))stop("incorrect likelihood string")

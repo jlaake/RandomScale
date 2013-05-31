@@ -12,8 +12,8 @@ DATA_SECTION
    vector w(1,4*n)
    !! w=1.0;
    !! for(i=1;i<=n;i++) w(2*n+2*i)=-1;
-	
-PARAMETER_SECTION 
+
+PARAMETER_SECTION
    init_vector beta(1,m,1);            	// beta parameter for log-sigma;
    init_bounded_number sigeps(-10,3,1); // log(sigma) for random effect;                
    random_effects_vector u(1,2*n,2);    // random effect for scale; first n for
