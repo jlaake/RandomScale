@@ -14,37 +14,11 @@
 #' @author Jeff Laake
 plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL)
 {
+#  Compute Nhat for plotting
+   Nlist=compute_Nhat(par,x,w,weps=5,dm=NULL)
+   Nhat=Nlist$Nhat
+   avg_mu_est=Nlist$avg_mu_est
 # Create plot of fit; uses histline from mrds
-	if(length(par)<2)
-	{
-		# compute fixed mu
-		avg_mu_est=exp(par)*sqrt(2*pi)*
-				(pnorm(w,0,exp(par))-.5)
-	}else
-	{
-		# Compute average_mu
-		if(is.null(dm))
-		  avg_mu_est=avg_mu(par=par,w=w,weps=weps,dm=NULL)
-	    else
-		{
-			avg_mu_est=vector("numeric",length=nrow(dm))
-			for(i in 1:nrow(dm))
-				avg_mu_est[i]=avg_mu(par=par,w=w,weps=weps,dm=dm[i,,drop=FALSE])
-		}
-	}
-# Compute Nhat
-	if(w==Inf)w=max(x)
-	if(w!=Inf)
-	{
-		if(is.null(dm))
-		{
-			Nhat=length(x)/(avg_mu_est/w)
-		}else
-		{
-			Nhat=sum(w/avg_mu_est)
-		}
-	}else
-		Nhat=NULL
 	max_x=w
 	if(is.null(nclass))
 		nints=ceiling(sqrt(length(x)))
@@ -75,5 +49,54 @@ plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL)
 	histline(bars,breaks,ylim=c(0,max(c(1,bars))),
 			xlab="Distance",ylab="Detection probability",main=main)
 	lines(ints,gx)
-	invisible(Nhat)
+	invisible()
+}
+#' Random Scale Detection Function Abundance
+#' 
+#' Compute estimate of N in the covered area.
+#' 
+#' @param par parameter vector (beta, beta_eps)
+#' @param x vector of observed distances
+#' @param w half-width of strip 
+#' @param weps range (-weps,weps) used for integration of std normal distribution
+#' @param dm the design matrix if one was used
+#' @param both if TRUE returns both avg_mu_est and Nhat in a list; otherwise just Nhat
+#' @export compute_Nhat
+#' @author Jeff Laake
+compute_Nhat=function(par,x,w,weps=5,dm=NULL,both=FALSE)
+{
+if(length(par)<2)
+{
+	# compute fixed mu
+	avg_mu_est=exp(par)*sqrt(2*pi)*
+			(pnorm(w,0,exp(par))-.5)
+}else
+{
+	# Compute average_mu
+	if(is.null(dm))
+		avg_mu_est=avg_mu(par=par,w=w,weps=weps,dm=NULL)
+	else
+	{
+		avg_mu_est=vector("numeric",length=nrow(dm))
+		for(i in 1:nrow(dm))
+			avg_mu_est[i]=avg_mu(par=par,w=w,weps=weps,dm=dm[i,,drop=FALSE])
+	}
+}
+# Compute Nhat
+if(w==Inf)w=max(x)
+if(w!=Inf)
+{
+	if(is.null(dm))
+	{
+		Nhat=length(x)/(avg_mu_est/w)
+	}else
+	{
+		Nhat=sum(w/avg_mu_est)
+	}
+}else
+	Nhat=NULL
+if(both)
+   return(list(Nhat=Nhat,avg_mu_est=avg_mu_est))
+else
+	return(Nhat)
 }
