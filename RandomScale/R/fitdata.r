@@ -114,7 +114,7 @@ flnl=function(par,x,w,weps=5,wrong=FALSE,debug)
 								x=x[i],w=w,par=par)$value+1e-10)
 			else
 				lnl=lnl-log(avg_gx(x[i],par)/
-								avg_mu(w,par,weps))
+								avg_mu(par,w,weps))
 		else
 		{
 			sigma=exp(par[1])

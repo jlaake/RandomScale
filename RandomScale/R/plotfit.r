@@ -24,12 +24,12 @@ plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL)
 	{
 		# Compute average_mu
 		if(is.null(dm))
-		  avg_mu_est=avg_mu(w=w,par=par,weps=weps,dm=NULL)
+		  avg_mu_est=avg_mu(par=par,w=w,weps=weps,dm=NULL)
 	    else
 		{
 			avg_mu_est=vector("numeric",length=nrow(dm))
 			for(i in 1:nrow(dm))
-				avg_mu_est[i]=avg_mu(w=w,par=par,weps=weps,dm=dm[i,,drop=FALSE])
+				avg_mu_est[i]=avg_mu(par=par,w=w,weps=weps,dm=dm[i,,drop=FALSE])
 		}
 	}
 # Compute Nhat

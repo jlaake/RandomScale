@@ -2,10 +2,10 @@
 \alias{fitadmb}
 \title{Random Scale Detection Function Fitting with admb}
 \usage{
-  fitadmb(x, w = Inf, formula = ~1, beta = NULL,
-    sigma = -3, likelihood = "f2",
-    extra.args = "-est -gh 10", verbose = TRUE, nsteps = 8,
-    keep = FALSE, debug = FALSE)
+  fitadmb(x, w = Inf, formula = ~1, beta = NULL, sigma = 0,
+    likelihood = "f2", extra.args = "-gh 10",
+    verbose = TRUE, nsteps = 8, keep = FALSE,
+    debug = FALSE)
 }
 \arguments{
   \item{x}{vector of distances or dataframe containing

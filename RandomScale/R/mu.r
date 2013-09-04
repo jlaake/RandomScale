@@ -2,7 +2,7 @@
 #' 
 #' @usage mu(eps,w,par,dm=NULL)
 #' 
-#'      avg_mu(w,par,weps=5,dm=NULL)
+#'      avg_mu(par,w,weps=5,dm=NULL)
 #' @export mu avg_mu
 #' @aliases mu avg_mu       
 #' @param eps std normal deviate
@@ -26,5 +26,5 @@ mu=function(eps,w,par,dm=NULL)
 	mu
 }
 # Average detection probability - integrated over eps
-avg_mu=function(w,par,weps=5,dm=NULL)
+avg_mu=function(par,w,weps=5,dm=NULL)
 	integrate(mu,-weps,weps,w=w,par=par,dm=dm)$value
