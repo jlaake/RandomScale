@@ -3,7 +3,7 @@
 \title{Random Scale Detection Function Plotting}
 \usage{
   plotfit(x, w, par, nclass = NULL, weps = 5, dm = NULL,
-    main = NULL)
+    main = NULL, adjust = TRUE)
 }
 \arguments{
   \item{x}{vector of observed distances}
@@ -20,6 +20,8 @@
   \item{dm}{the design matrix if one was used}
 
   \item{main}{title for plot}
+
+  \item{adjust}{if TRUE, adjusts intercept}
 }
 \description{
   Plots histogram of data and fitted half-normal detection

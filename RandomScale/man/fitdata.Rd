@@ -33,6 +33,8 @@
 
   \item{method}{optim method; if bounds specified uses
   L-BFGS-B regardless}
+
+  \item{hessian}{if TRUE, returns hessian for v-c matrix}
 }
 \description{
   Fits a half-normal detection function with fixed or
@@ -58,12 +60,13 @@ x=simdata(n=500,w=Inf,beta_eps=-.5)
 par(mfrow=c(1,3))
 results_random=fitdata(x,w=Inf,beta_eps=-.5)
 plotfit(x,w=max(x),results_random$model$par,nclass=30,
-                main="eq 4 likelihood")
-#Because data are untruncated the estimates from the f1 likelihood
+                main="eq 4 likelihood",adjust=FALSE)
+#Because data are untruncated the estimates from the f1 likelihood will match
+# once the intercept is adjusted
 results_random_wrong=fitdata(x,w=Inf,beta_eps=-.5,wrong=TRUE)
-param=results_random_wrong$model$par
-plotfit(x,w=max(x),param,nclass=30,main="eq 8 likelihood")
-plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+plotfit(x,w=max(x),results_random_wrong$model$par,nclass=30,
+      main="eq 8 likelihood",adjust=FALSE)
+plotfit(x,w=max(x),results_random_wrong$model$par,nclass=30,
       main="eq 8 likelihood\\nadjusted beta")
 }
 \author{

@@ -6,11 +6,13 @@ LazyLoad: yes
 Author: Jeff Laake <jeff.laake@noaa.gov>, Hans Skaug<hans.skaug@math.uib.no>
 Description: This package implements random scale half-normal detection
     function fitting for line transect sampling
-Version: 0.1.5
-Date: 2013-5-31
+Version: 0.1.6
+Date: 2013-9-4
 Depends:
     R (>= 2.0.0),
     R2admb
+Imports:
+    mrds
 SystemRequirements: ADMB version 11 (\url{http://admb-project.org}) or version
     10 if TPL files are modified. See ?RandomScale
 Collate:

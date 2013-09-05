@@ -28,6 +28,7 @@
 #' @param wrong if TRUE uses incorrect likelihood
 #' @param debug if TRUE output parameter and -lnl values during iterations
 #' @param method optim method; if bounds specified uses L-BFGS-B regardless
+#' @param hessian if TRUE, returns hessian for v-c matrix
 #' @author Jeff Laake
 #' @examples
 #' #simulate some data using rejection sampling and n=500
@@ -37,15 +38,16 @@
 #' par(mfrow=c(1,3)) 
 #' results_random=fitdata(x,w=Inf,beta_eps=-.5)
 #' plotfit(x,w=max(x),results_random$model$par,nclass=30,
-#'                 main="eq 4 likelihood")
-#' #Because data are untruncated the estimates from the f1 likelihood 
+#'                 main="eq 4 likelihood",adjust=FALSE)
+#' #Because data are untruncated the estimates from the f1 likelihood will match
+#' # once the intercept is adjusted
 #' results_random_wrong=fitdata(x,w=Inf,beta_eps=-.5,wrong=TRUE)
-#' param=results_random_wrong$model$par
-#' plotfit(x,w=max(x),param,nclass=30,main="eq 8 likelihood")
-#' plotfit(x,w=max(x),c(param[1]-exp(2*param[2]),param[2]),nclass=30,
+#' plotfit(x,w=max(x),results_random_wrong$model$par,nclass=30,
+#'       main="eq 8 likelihood",adjust=FALSE)
+#' plotfit(x,w=max(x),results_random_wrong$model$par,nclass=30,
 #'       main="eq 8 likelihood\nadjusted beta")
 fitdata=function(x,beta=NULL,beta_eps=-3,bounds=NULL,w=Inf,
-		weps=5,wrong=FALSE,debug=FALSE,method="L-BFGS-B")
+		weps=5,wrong=FALSE,debug=FALSE,method="L-BFGS-B",hessian=FALSE)
 {
 	if(w<max(x))
 		x=x[x<=w]
@@ -83,7 +85,7 @@ fitdata=function(x,beta=NULL,beta_eps=-3,bounds=NULL,w=Inf,
 			    bounds[1,]=bounds[1,]-log(scale)
 			model=optim(par=c(beta,beta_eps),flnl,x=x,w=w,
 					lower=bounds[,1],upper=bounds[,2],weps=weps,
-					wrong=wrong,debug=debug,method="L-BFGS-B")
+					wrong=wrong,debug=debug,method="L-BFGS-B",hessian=hessian)
 		}
 	    else
 			model=optim(par=c(beta,beta_eps),flnl,x=x,w=w,weps=weps,
@@ -125,3 +127,5 @@ flnl=function(par,x,w,weps=5,wrong=FALSE,debug)
 	if(debug)cat("lnl=",lnl,"\n")
 	lnl
 }
+
+

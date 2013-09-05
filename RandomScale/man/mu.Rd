@@ -5,7 +5,7 @@
 \usage{
   mu(eps,w,par,dm=NULL)
 
-  avg_mu(w,par,weps=5,dm=NULL)
+  avg_mu(par,w,weps=5,dm=NULL)
 }
 \arguments{
   \item{eps}{std normal deviate}

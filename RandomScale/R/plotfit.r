@@ -10,15 +10,20 @@
 #' @param weps range (-weps,weps) used for integration of std normal distribution
 #' @param dm the design matrix if one was used
 #' @param main title for plot
+#' @param adjust if TRUE, adjusts intercept
 #' @export plotfit
+#' @import mrds
 #' @author Jeff Laake
-plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL)
+plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL,adjust=TRUE)
 {
 #  Compute Nhat for plotting
-   Nlist=compute_Nhat(par,x,w,weps=5,dm=NULL)
+   Nlist=compute_Nhat(par,x,w,weps=5,dm=dm,both=TRUE,adjust=adjust)
    Nhat=Nlist$Nhat
    avg_mu_est=Nlist$avg_mu_est
 # Create plot of fit; uses histline from mrds
+	if(adjust)
+		par[1]=par[1]-exp(2*par[length(par)])
+	if(w==Inf)w=max(x)
 	max_x=w
 	if(is.null(nclass))
 		nints=ceiling(sqrt(length(x)))
@@ -49,7 +54,7 @@ plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL)
 	histline(bars,breaks,ylim=c(0,max(c(1,bars))),
 			xlab="Distance",ylab="Detection probability",main=main)
 	lines(ints,gx)
-	invisible()
+	invisible(Nhat)
 }
 #' Random Scale Detection Function Abundance
 #' 
@@ -61,9 +66,10 @@ plotfit=function(x,w,par,nclass=NULL,weps=5,dm=NULL,main=NULL)
 #' @param weps range (-weps,weps) used for integration of std normal distribution
 #' @param dm the design matrix if one was used
 #' @param both if TRUE returns both avg_mu_est and Nhat in a list; otherwise just Nhat
+#' @param adjust if TRUE, adjusts intercept
 #' @export compute_Nhat
 #' @author Jeff Laake
-compute_Nhat=function(par,x,w,weps=5,dm=NULL,both=FALSE)
+compute_Nhat=function(par,x,w,weps=5,dm=NULL,both=FALSE,adjust=TRUE)
 {
 if(length(par)<2)
 {
@@ -72,6 +78,8 @@ if(length(par)<2)
 			(pnorm(w,0,exp(par))-.5)
 }else
 {
+	if(adjust)
+	   par[1]=par[1]-exp(2*par[length(par)])
 	# Compute average_mu
 	if(is.null(dm))
 		avg_mu_est=avg_mu(par=par,w=w,weps=weps,dm=NULL)
@@ -99,4 +107,31 @@ if(both)
    return(list(Nhat=Nhat,avg_mu_est=avg_mu_est))
 else
 	return(Nhat)
+}
+
+#' Random Scale Detection Function Abundance Standard Error
+#' 
+#' Compute estimate of se(N) in the covered area; does not account for variation in n
+#' 
+#' @param par parameter vector (beta, beta_eps)
+#' @param vcov variance-covariance matrix of parameters (beta, beta_eps)
+#' @param x vector of observed distances
+#' @param w half-width of strip 
+#' @param weps range (-weps,weps) used for integration of std normal distribution
+#' @param dm the design matrix if one was used
+#' @param adjust if TRUE, intercept is adjusted
+#' @export compute_Nhat.se
+#' @import mrds
+#' @author Jeff Laake
+compute_Nhat.se=function(par,vcov,x,w,weps=5,dm=NULL,adjust=TRUE)
+{
+   Nlist=compute_Nhat(par,x,w,weps=5,dm=dm,both=TRUE,adjust=adjust)
+   p=Nlist$avg_mu_est/w
+   if(length(p)==1)
+   return(sqrt(Nlist$Nhat*(1-p)/p+
+	     DeltaMethod(par,compute_Nhat,vcov,delta=0.001,x=x,w=w,weps=weps,dm=dm,both=FALSE,adjust=adjust)$variance))
+   else
+	   return(sqrt(sum((1-p)/p^2)+
+	      DeltaMethod(par,compute_Nhat,vcov,delta=0.001,x=x,w=w,weps=weps,dm=dm,both=FALSE,adjust=adjust)$variance))
+   
 }
