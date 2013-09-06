@@ -34,11 +34,11 @@ par(mfrow=c(1,3))
 ### code chunk number 4: RandomScalePaper.Rnw:533-545
 ###################################################
 # simulate data
-x=simdata(n=500,w=Inf,beta=2,beta_eps=-.5)
-# fit data with g likelihood
+x=simdata(n=500,w=Inf,beta=2)
+# fit data with g likelihood; beta_eps is starting value
 results_random=fitdata(x,w=Inf)
 plotfit(x,w=max(x),results_random$model$par,nclass=30,
-        main="eq 6 likelihood")
+        main="eq 6 likelihood",adjust=FALSE)
 # fit data with incorrect likelihood
 results_random_wrong=fitdata(x,w=Inf,wrong=TRUE)
 plotfit(x,w=max(x),results_random_wrong$model$par,nclass=30,
