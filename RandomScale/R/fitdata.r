@@ -12,7 +12,7 @@
 #' used: bounds=matrix(c(-3,2,-10,2),nrow=2,byrow=TRUE)
 #' 
 #' @usage fitdata(x,beta=NULL,beta_eps=-3,bounds=NULL,w=Inf,weps=5,
-#'             wrong=FALSE,debug=FALSE,method="L-BFGS-B")
+#'             wrong=FALSE,debug=FALSE,method="L-BFGS-B",hessian=FALSE)
 #' 
 #'        flnl(par,x,w,weps=5,wrong=FALSE,debug)
 #' 

@@ -3,6 +3,11 @@
 \name{NEWS}
 \title{RandomScale News}
 \encoding{UTF-8}
+\section{Changes in version 0.1.6 (0.1.5 skipped)(2013-9-18)}{
+  \itemize{
+    \item Added compute.Nhat and compute.Nhat.se
+  }
+}
 
 \section{Changes in version 0.1.4 (2013-3-5)}{
   \itemize{

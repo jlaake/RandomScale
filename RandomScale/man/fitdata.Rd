@@ -4,7 +4,7 @@
 \title{Random Scale Detection Function Fitting}
 \usage{
   fitdata(x,beta=NULL,beta_eps=-3,bounds=NULL,w=Inf,weps=5,
-    wrong=FALSE,debug=FALSE,method="L-BFGS-B")
+    wrong=FALSE,debug=FALSE,method="L-BFGS-B",hessian=FALSE)
 
   flnl(par,x,w,weps=5,wrong=FALSE,debug)
 }
