@@ -10,20 +10,7 @@ Version: 0.1.6
 Date: 2013-9-4
 Depends:
     R (>= 2.0.0),
-    R2admb
-Imports:
+    R2admb,
     mrds
 SystemRequirements: ADMB version 11 (\url{http://admb-project.org}) or version
     10 if TPL files are modified. See ?RandomScale
-Collate:
-    'fitdata.r'
-    'fx.r'
-    'gx.r'
-    'mu.r'
-    'plotfit.r'
-    'simdata.r'
-    'histline.R'
-    'fitadmb.r'
-    'prepare_admb.r'
-    'RandomScale-package.R'
-    'zzz.r'

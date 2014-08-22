@@ -25,7 +25,7 @@
 #' @param par parameter vector for flnl
 #' @param w half-width of strip 
 #' @param weps range (-weps,weps) used for integration of std normal distribution
-#' @param wrong if TRUE uses incorrect likelihood
+#' @param wrong if TRUE uses incorrect likelihood; see likelihoods.pdf in the package directory
 #' @param debug if TRUE output parameter and -lnl values during iterations
 #' @param method optim method; if bounds specified uses L-BFGS-B regardless
 #' @param hessian if TRUE, returns hessian for v-c matrix

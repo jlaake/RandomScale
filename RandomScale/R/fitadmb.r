@@ -14,7 +14,7 @@
 #' @param formula formula for scale function 
 #' @param beta starting values for beta
 #' @param sigma starting value for log sigma
-#' @param likelihood character string "g","f1","f2","fixed"
+#' @param likelihood character string "g","f1","f2","fixed"; see likelihoods.pdf in the package directory
 #' @param extra.args for admb run
 #' @param verbose for compile and run
 #' @param nsteps adromb integration argument; default 8.
@@ -22,56 +22,110 @@
 #' @param debug if TRUE output parameter and -lnl values during iterations
 #' @author Jeff Laake
 #' @examples 
-#' #fit simulated data with random scale
-#' set.seed(123)
-#' x=simdata(n=500,w=Inf,beta_eps=-.5)
-#' par(mfrow=c(1,3)) 
-#' glike=fitadmb(x,w=Inf,likelihood="g")
-#' plotfit(x,w=Inf,c(glike$coeflist[[1]],glike$coeflist[[2]]),nclass=30,
-#'		main="eq 4 likelihood")
-#' f2like=fitadmb(x,w=Inf,likelihood="f2")
-#' param=c(f2like$coeflist[[1]],f2like$coeflist[[2]])
-#' plotfit(x,w=Inf,c(param[1]-exp(2*param[2]),param[2]),nclass=30,
-#'		main="eq 7 likelihood")
-#' f1like=fitadmb(x,w=Inf,likelihood="f1")
-#' param=c(f1like$coeflist[[1]],f1like$coeflist[[2]])
-#' plotfit(x,w=Inf,c(param[1]-exp(2*param[2]),param[2]),nclass=30,
-#'		main="eq 8 likelihood")
-#' dev.new()
-#' par(mfrow=c(1,2)) 
-#' #Mixed effect model
-#' x1=simdata(n=2000,w=50,beta_eps=-.5,beta=2,fixed=FALSE,reject=TRUE)
-#' x2=simdata(n=1000,w=50,beta_eps=-.5,beta=1,fixed=FALSE,reject=TRUE)
-#' df=data.frame(covariate=c(rep(0,length(x1)),rep(1,length(x2))),
-#' 		distance=c(x1,x2))
-#' fwlike=fitadmb(df,w=50,formula=~covariate,likelihood="f2")
-#' param=c(fwlike$coeflist[[1]],fwlike$coeflist[[2]])
-#' Nhatwcov=plotfit(df$distance,w=50,
-#' 		par=c(param[1]-exp(2*param[3]),param[2],param[3]),
-#' 		nclass=30,dm=model.matrix(~covariate,df),main="With covariate")
-#' flike=fitadmb(df,w=50,formula=~1,likelihood="f2")
-#' param=c(flike$coeflist[[1]],flike$coeflist[[2]])
-#' Nhatwocov=plotfit(df$distance,w=50,
-#' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
-#' 		main="Without covariate")
-#' dev.new()
-#' par(mfrow=c(2,2))
-#' param=c(fwlike$coeflist[[1]],fwlike$coeflist[[2]])
-#' Nhatwcov0=plotfit(df$distance[df$covariate==0],w=50,
-#' 		par=c(param[1]-exp(2*param[3]),param[2],param[3]),
-#' 		nclass=30,dm=model.matrix(~covariate,df[df$covariate==0,]),
-#' 		main="With covariate value=0")
-#' Nhatwcov1=plotfit(df$distance[df$covariate==1],w=50,
-#' 		par=c(param[1]-exp(2*param[2]),param[2],param[3]),nclass=30,
-#' 		dm=model.matrix(~covariate,df[df$covariate==1,]),
-#' 		main="With covariate value=1")
-#' param=c(flike$coeflist[[1]],flike$coeflist[[2]])
-#' Nhatwocov0=plotfit(df$distance[df$covariate==0],w=50,
-#' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
-#' 		main="Without covariate value=0")
-#' Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,
-#' 		par=c(param[1]-exp(2*param[2]),param[2]),nclass=30,
-#' 		main="Without covariate value=1")
+#' # random effect example in paper
+#'dev.new()
+#'par(mfrow=c(1,3))
+#'set.seed(123)
+#'# simulate data
+#'x=simdata(n=500,w=Inf,beta=2,beta_eps=-.5)
+#'# fit data with g likelihood eq(6) using R code 
+#'results_random=fitdata(x,w=Inf)
+#'plotfit(x,w=max(x),results_random$model$par,nclass=30,
+#'		main="R code\neq 6 likelihood",adjust=FALSE)
+#'# fit data with g likelihood eq (6) using ADMB
+#'glike=fitadmb(x,w=Inf,likelihood="g",verbose=FALSE)
+#'plotfit(x,w=Inf, glike$coefficients[1:2],nclass=30,
+#'		main="ADMB code\neq 6 likelihood",adjust=FALSE)
+#'# fit data with f likelihood eq (9) using ADMB
+#'f2like=fitadmb(x,w=Inf,likelihood="f2",verbose=FALSE)
+#'plotfit(x,w=Inf,f2like$coefficients[1:2],nclass=30,
+#'		main="ADMB code\neq 9 likelihood")
+#' #results in table 1
+#' # R code
+#' sprintf("%7.2f",-results_random$model$val)
+#' sprintf("%5.3f",results_random$model$par[1])
+#' sprintf("%5.3f",results_random$model$par[2])
+#' # Admb code g likelihood
+#' sprintf("%7.2f",glike$loglik)
+#' sprintf("%5.3f",glike$coeflist[[1]])
+#' sprintf("%5.3f",glike$coeflist[[2]])
+#' # Admb code with f likelihood (f2)
+#' sprintf("%7.2f",f2like$loglik)
+#' sprintf("%5.3f",f2like$coeflist[[1]])
+#' sprintf("%5.3f",f2like$coeflist[[1]]-exp(2*f2like$coeflist[[2]]))
+#' sprintf("%5.3f",f2like$coeflist[[2]])
+#'# mixed efffect example in paper
+#'dev.new()
+#'par(mfrow=c(1,2))
+#'# simulate data
+#'x1=simdata(n=2000,w=50,beta_eps=-.5,beta=2,
+#'		fixed=FALSE,reject=TRUE)
+#'x2=simdata(n=1000,w=50,beta_eps=-.5,beta=1,
+#'		fixed=FALSE,reject=TRUE)
+#'df=data.frame(covariate=c(rep(0,length(x1)),
+#'				rep(1,length(x2))),distance=c(x1,x2))
+#'# fit data with covariate
+#'fwlike=fitadmb(df,w=50,formula=~covariate,
+#'		likelihood="f2",verbose=FALSE)
+#'param=fwlike$coefficients[1:3]
+#'# plot and get estimates of abundance in covered area and its std error 
+#'Nhatwcov=plotfit(df$distance,w=50,par=param,nclass=30,
+#'		dm=model.matrix(~covariate,df),
+#'		main="With covariate")
+#'Nhatwcov.se=compute_Nhat.se(par=param,fwlike$vcov[1:3,1:3],
+#'		x=df,w=50,dm=model.matrix(~covariate,df))
+#'# fit data without covariate
+#'flike=fitadmb(df,w=50,formula=~1,
+#'		likelihood="f2",verbose=FALSE)
+#'param=flike$coefficients[1:2]
+#'# plot and get estimates of abundance in covered area and its std error 
+#'Nhatwocov=plotfit(df$distance,w=50,par=param,nclass=30,
+#'		main="Without covariate")
+#'Nhatwocov.se=compute_Nhat.se(par=param,flike$vcov[1:2,1:2],
+#'		x=df,w=50,dm=model.matrix(~1,df))
+#'# The code to show delta AIC, abundance and std errors and sigma estimates is
+#'round(-2*flike$loglik+2*2-(-2*fwlike$loglik+2*3),2)
+#'round(Nhatwcov,0)
+#'round(Nhatwcov.se,1)
+#'round(Nhatwocov,0)
+#'round(Nhatwocov.se,1)
+#'round(exp(fwlike$coefficients[3]),2)
+#'round(exp(flike$coefficients[2]),2)
+#' # plots in figure 3 and results in paper
+#'dev.new()
+#'par(mfrow=c(2,2))
+#'param=fwlike$coefficients[1:3]
+#'Nhatwcov0=plotfit(df$distance[df$covariate==0],w=50,par=param,
+#'		nclass=30,dm=model.matrix(~covariate,df[df$covariate==0,]),
+#'		main="Model with covariate\ncovariate value=0")
+#'Nhatwcov0.se=compute_Nhat.se(par=param,fwlike$vcov[1:3,1:3],
+#'		x=df[df$covariate==0,],w=50,
+#'		dm=model.matrix(~covariate,df[df$covariate==0,]))
+#'Nhatwcov1=plotfit(df$distance[df$covariate==1],w=50,par=param,
+#'		nclass=30,dm=model.matrix(~covariate,df[df$covariate==1,]),
+#'		main="Model with covariate\ncovariate value=1")
+#'Nhatwcov1.se=compute_Nhat.se(par=param,fwlike$vcov[1:3,1:3],
+#'		x=df[df$covariate==1,],w=50,
+#'		dm=model.matrix(~covariate,df[df$covariate==1,]))
+#'param=flike$coefficients[1:2]
+#'Nhatwocov0=plotfit(df$distance[df$covariate==0],w=50,par=param,
+#'		nclass=30, main="Model without covariate\ncovariate value=0")
+#'Nhatwocov0.se=compute_Nhat.se(par=param,flike$vcov[1:2,1:2],
+#'		x=df[df$covariate==0,],w=50,
+#'		dm=model.matrix(~1,df[df$covariate==0,]))
+#'Nhatwocov1=plotfit(df$distance[df$covariate==1],w=50,par=param,
+#'		nclass=30,main="Model without covariate\ncovariate value=1")
+#'Nhatwocov1.se=compute_Nhat.se(par=param,flike$vcov[1:2,1:2],
+#'		x=df[df$covariate==1,],w=50,
+#'		dm=model.matrix(~1,df[df$covariate==1,]))
+#'round(Nhatwcov0,0)
+#'round(Nhatwcov0.se,1)
+#'round(Nhatwcov1,1)
+#'round(Nhatwcov1.se,1)
+#'round(Nhatwocov0,0)
+#'round(Nhatwocov0.se,1)
+#'round(Nhatwocov1,1)
+#'round(Nhatwocov1.se,1)
 fitadmb=function(x,w=Inf,formula=~1,beta=NULL,sigma=0,likelihood="f2",
 		extra.args="-gh 10",verbose=TRUE,nsteps=8,keep=FALSE,debug=FALSE)
 {
