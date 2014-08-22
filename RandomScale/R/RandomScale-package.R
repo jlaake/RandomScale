@@ -6,8 +6,9 @@
 #' The ADMB TPL files are contained in the Inst directory(\url{https://github.com/jlaake/RandomScale/tree/master/RandomScale/inst}).
 #' Example AMDB DAT files are contained in the Data directory(\url{https://github.com/jlaake/RandomScale/tree/master/RandomScale/Data}).
 #' Version 11 of ADMB is required for the TPL files as distributed but you can modify them by replacing instances of PI with the 
-#' value 3.141592654. Executable versions are also provided so the user does not need ADMB but the R2admb package is required because
-#' it is used to extract results from the output file.
+#' value 3.141592654. Executable versions are also provided if you download the binary version for Windows at \url{https://drive.google.com/folder/d/0B77g1ScdUwVeOVJNUVVGS0YtWE0/edit?ddrp=1#}
+#' In that case you do not need ADMB but the R2admb package is required because it is used to extract results from the output file. The examples
+#' also use the mrds package which is available on CRAN. Both R2admb and mrds should be installed separately.
 #'  
 #' If you wish to to install ADMB, you need to install a C++ compiler as well as ADMB. We suggest that
 #' you install gcc. To use the built-in links in the function prepare_admb, admb should be installed to c:\\admb and the gcc
@@ -28,8 +29,8 @@
 #' @author Jeff Laake
 #' @references Fournier, D.A., H.J. Skaug, J. Ancheta, J. Ianelli, A. Magnusson, M.N. Maunder, A. Nielsen, and J. Sibert. 2012. AD Model Builder: using automatic differentiation for statistical inference of highly parameterized complex nonlinear models. Optim. Methods Softw. 27:233-249.
 #' @examples
-#' # the following runs the example in Oedekoven et al; 
-#' # note that you need to change nreps to 100 in simulation to get the same example
+#' # the following runs the examples in Oedekoven et al; 
+#' # note that you need to change nreps to 500 in simulation to get the same example
 #' example(fitadmb)
 #' example(hp)
 #' example(simulation)
@@ -57,6 +58,7 @@ NULL
 #' @keywords datasets
 #' @examples
 #'
+#' dev.new()
 #'par(mfrow=c(1,2))
 #'data(hp)
 #'# hp=read.delim("hp.txt",header=TRUE)

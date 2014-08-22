@@ -75,7 +75,7 @@ sprintf("\%5.3f",f2like$coeflist[[1]]-exp(2*f2like$coeflist[[2]]))
 sprintf("\%5.3f",f2like$coeflist[[2]])
 # mixed efffect example in paper
 dev.new()
-par(mfrow)
+par(mfrow=c(1,2))
 # simulate data
 x1=simdata(n=2000,w=50,beta_eps=-.5,beta=2,
 		fixed=FALSE,reject=TRUE)
@@ -111,6 +111,7 @@ round(Nhatwocov.se,1)
 round(exp(fwlike$coefficients[3]),2)
 round(exp(flike$coefficients[2]),2)
 # plots in figure 3 and results in paper
+dev.new()
 par(mfrow=c(2,2))
 param=fwlike$coefficients[1:3]
 Nhatwcov0=plotfit(df$distance[df$covariate==0],w=50,par=param,

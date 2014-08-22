@@ -4,8 +4,8 @@
 \title{Simulation in Oedekoven et al}
 \description{
 The following is the code used to generate the simulation results in the paper.  To produce the
-same results set nreps=5 to nreps=100. It will likely take 1.5-3 hrs to run all of the simulations
-depending on your computer. We have set nreps to 5 to reduce time for computation with example.
+same results set nreps=5 to nreps=500. It will likely take about 10 hours to run all of the simulations
+depending on your computer. We have set nreps to 5 to reduce time for computation with the example.
 }
 \examples{
 #define function for simulations

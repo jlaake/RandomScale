@@ -18,6 +18,7 @@ It also includes observer (always 1), detected (always 1) and object (sequential
 by mrds package.
 }
 \examples{
+dev.new()
 par(mfrow=c(1,2))
 data(hp)
 # hp=read.delim("hp.txt",header=TRUE)
