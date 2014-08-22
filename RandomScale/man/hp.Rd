@@ -41,10 +41,9 @@ Nhat.mixed=compute_Nhat(par=modmixed$coeff[1:3],x=hp$distance,w=443.1635,
                 dm=model.matrix(~size,hp[,"size",drop=FALSE]))
 Nhat.se.mixed=compute_Nhat.se(par=modmixed$coeff[1:3],vcov=modmixed$vcov[1:3,1:3],
                 x=hp$distance,w=443.1635,dm=model.matrix(~size,hp[,"size",drop=FALSE]))
-Nhat.mcds
-Nhat.se.mcds
-Nhat.mixed
-Nhat.se.mixed
+formatC(xx$aic-(-2*modmixed$loglik+2*modmixed$npar),digits=2)
+paste(formatC(Nhat.mcds,digits=4)," (se = ",formatC(Nhat.se.mcds,digits=2),")",sep="")
+paste(formatC(Nhat.mixed,digits=4)," (se = ",formatC(Nhat.se.mixed,digits=2),")",sep="")
 }
 \keyword{datasets}
 
