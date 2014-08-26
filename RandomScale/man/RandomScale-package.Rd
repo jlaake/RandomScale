@@ -12,8 +12,9 @@ The ADMB TPL files are contained in the Inst directory(\url{https://github.com/j
 Example AMDB DAT files are contained in the Data directory(\url{https://github.com/jlaake/RandomScale/tree/master/RandomScale/Data}).
 Version 11 of ADMB is required for the TPL files as distributed but you can modify them by replacing instances of PI with the
 value 3.141592654. Executable versions are also provided if you download the binary version for Windows at \url{https://drive.google.com/folder/d/0B77g1ScdUwVeOVJNUVVGS0YtWE0/edit?ddrp=1#}
-In that case you do not need ADMB but the R2admb package is required because it is used to extract results from the output file. The examples
-also use the mrds package which is available on CRAN. Both R2admb and mrds should be installed separately.
+In that case you do not need ADMB but the R2admb package is required because it is used to extract results from the output file. The R2admb package should be installed separately.
+To run the \link{hp} and \link{simulation} example, you'll need to install the mrds package from CRAN.  In turn it needs several other packages to be
+installed. If you run example(RandomScale,ask=FALSE) the fitadmb examples will be run unattended, but the hp and simulation examples need to be run manually. See ?RandomScale
 
 If you wish to to install ADMB, you need to install a C++ compiler as well as ADMB. We suggest that
 you install gcc. To use the built-in links in the function prepare_admb, admb should be installed to c:\\admb and the gcc
@@ -31,11 +32,18 @@ in the RandomScale package directory contains a description of the alternative l
 removed from the paper but remains in the code.
 }
 \examples{
-# the following runs the examples in Oedekoven et al;
-# note that you need to change nreps to 500 in simulation to get the same example
-example(fitadmb)
-example(hp)
+# the following runs the examples in Oedekoven et al; note that both the hp and
+# simulation and hp examples require mrds package
+# which in turn which requires other packages to be installed
+example(fitadmb,ask=FALSE)
+\dontrun{
+# To run this example you must have mrds installed. Type help(hp) and copy
+# the example code shown in the help file and paste it into the R console.
+example(hp,ask=FALSE)
+# To run the simulation you must have mrds installed. Type help(simulation) and
+# copy the example code shown in the help file and paste it into the R console.
 example(simulation)
+}
 }
 \author{
 Jeff Laake

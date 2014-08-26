@@ -7,8 +7,9 @@
 #' Example AMDB DAT files are contained in the Data directory(\url{https://github.com/jlaake/RandomScale/tree/master/RandomScale/Data}).
 #' Version 11 of ADMB is required for the TPL files as distributed but you can modify them by replacing instances of PI with the 
 #' value 3.141592654. Executable versions are also provided if you download the binary version for Windows at \url{https://drive.google.com/folder/d/0B77g1ScdUwVeOVJNUVVGS0YtWE0/edit?ddrp=1#}
-#' In that case you do not need ADMB but the R2admb package is required because it is used to extract results from the output file. The examples
-#' also use the mrds package which is available on CRAN. Both R2admb and mrds should be installed separately.
+#' In that case you do not need ADMB but the R2admb package is required because it is used to extract results from the output file. The R2admb package should be installed separately.
+#' To run the \link{hp} and \link{simulation} example, you'll need to install the mrds package from CRAN.  In turn it needs several other packages to be 
+#' installed. If you run example(RandomScale,ask=FALSE) the fitadmb examples will be run unattended, but the hp and simulation examples need to be run manually. See ?RandomScale
 #'  
 #' If you wish to to install ADMB, you need to install a C++ compiler as well as ADMB. We suggest that
 #' you install gcc. To use the built-in links in the function prepare_admb, admb should be installed to c:\\admb and the gcc
@@ -29,12 +30,18 @@
 #' @author Jeff Laake
 #' @references Fournier, D.A., H.J. Skaug, J. Ancheta, J. Ianelli, A. Magnusson, M.N. Maunder, A. Nielsen, and J. Sibert. 2012. AD Model Builder: using automatic differentiation for statistical inference of highly parameterized complex nonlinear models. Optim. Methods Softw. 27:233-249.
 #' @examples
-#' # the following runs the examples in Oedekoven et al; 
-#' # note that you need to change nreps to 500 in simulation to get the same example
-#' example(fitadmb)
-#' example(hp)
+#' # the following runs the examples in Oedekoven et al; note that both the hp and 
+#' # simulation and hp examples require mrds package 
+#' # which in turn which requires other packages to be installed
+#' example(fitadmb,ask=FALSE)
+#' \dontrun{
+#' # To run this example you must have mrds installed. Type help(hp) and copy 
+#' # the example code shown in the help file and paste it into the R console.
+#' example(hp,ask=FALSE)
+#' # To run the simulation you must have mrds installed. Type help(simulation) and 
+#' # copy the example code shown in the help file and paste it into the R console.
 #' example(simulation)
-#' 
+#' }
 NULL
 
 
@@ -57,7 +64,8 @@ NULL
 #' 
 #' @keywords datasets
 #' @examples
-#'
+#'\dontrun{
+#'require(mrds)
 #'dev.new()
 #'par(mfrow=c(1,2))
 #'data(hp)
@@ -84,19 +92,20 @@ NULL
 #'formatC(xx$aic-(-2*modmixed$loglik+2*modmixed$npar),digits=2)
 #'paste(formatC(Nhat.mcds,digits=4)," (se = ",formatC(Nhat.se.mcds,digits=2),")",sep="")
 #'paste(formatC(Nhat.mixed,digits=4)," (se = ",formatC(Nhat.se.mixed,digits=2),")",sep="")
-#' 
+#'}
 
 NULL
 
 #' Simulation in Oedekoven et al 
 #' 
-#' The following is the code used to generate the simulation results in the paper.  To produce the
-#' same results set nreps=5 to nreps=500. It will likely take about 10 hours to run all of the simulations
-#' depending on your computer. We have set nreps to 5 to reduce time for computation with the example.  
+#' The following is the code used to generate the simulation results in the paper. It will likely take about 10 hours to run all of the simulations
+#' depending on your computer. 
 #' 
 #' @name simulation
 #' @examples
-#' #define function for simulations
+#' \dontrun{
+#'require(mrds)
+#'#define function for simulations
 #'tsims=function(N=4000,df=3,w=40,nreps=100,plot=TRUE,hz=FALSE,
 #'              tdf=TRUE,hzscale=1,hzpow=2,sigma=1)
 #'{
@@ -207,7 +216,7 @@ NULL
 #'   return(res)
 #'}
 #' # perform simulations
-#' nreps=5
+#' nreps=500
 #' set.seed(93851)
 #'t.df3.n180=tsims(plot=F,nreps=nreps)
 #'t.df5.n180=tsims(df=5,plot=F,nreps=nreps)
@@ -243,9 +252,16 @@ NULL
 #'colnames(sim_results)[13]="$RMSE_{AVG}$"
 #' #commented out code that produces table in paper
 #' #library(xtable)
-#' #print(xtable(sim_results,caption="Percent relative bias (PRB) and root mean square error (RMSE) as proportion of true abundance for random scale half-normal and hazard rate detection function models for distances generated from t-distribution, random scale half-normal and hazard rate detection functions. Each value is the summary for 100 replicate simulations. The subscripts F, G and HR refer to the likelihoods eq (6), eq (9) and the hazard rate. AVG subscript represents the values in which the estimate was generated from the model that had the lowest AIC for each replicate.",
+#' #print(xtable(sim_results,caption=paste("Percent relative bias (PRB) and root mean",
+#' #" square error (RMSE) as proportion of true abundance for random scale half-normal",
+#' #" and hazard rate detection function models for distances generated from t-distribution, 
+#' #" random scale half-normal and hazard rate detection functions. Each value is the summary",
+#' #" for 100 replicate simulations. The subscripts F, G and HR refer to the likelihoods eq (6),",
+#' #" eq (9) and the hazard rate. AVG subscript represents the values in which the estimate was",
+#' #" generated from the model that had the lowest AIC for each replicate.",
 #' #label="simresults",align=c("c","c",rep("r",12))),
 #' #caption.placement="top",latex.environments="center",size="scriptsize",include.rownames=FALSE,
 #' #sanitize.colnames.function = function(x){x}, sanitize.text.function=function(x){x})
+#' }
 NULL
 

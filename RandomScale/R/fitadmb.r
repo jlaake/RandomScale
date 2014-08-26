@@ -9,6 +9,7 @@
 #' but the reported value for the output is adjusted back to the original scale
 #' 
 #' @export 
+#' @import R2admb
 #' @param x vector of distances or dataframe containing observed distances (distance) and other covariates
 #' @param w half-width of strip; if infinite w routine sets w to 2*max(x)
 #' @param formula formula for scale function 

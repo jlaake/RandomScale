@@ -1,5 +1,5 @@
 print.RandomScale.version <- function()
-{ library(help=RMark)$info[[1]] -> version
+{ library(help=RandomScale)$info[[1]] -> version
 	version <- version[pmatch("Version",version)]
 	if(!is.null(version))
 	{

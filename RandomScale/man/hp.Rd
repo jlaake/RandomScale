@@ -18,6 +18,8 @@ It also includes observer (always 1), detected (always 1) and object (sequential
 by mrds package.
 }
 \examples{
+\dontrun{
+require(mrds)
 dev.new()
 par(mfrow=c(1,2))
 data(hp)
@@ -44,6 +46,7 @@ Nhat.se.mixed=compute_Nhat.se(par=modmixed$coeff[1:3],vcov=modmixed$vcov[1:3,1:3
 formatC(xx$aic-(-2*modmixed$loglik+2*modmixed$npar),digits=2)
 paste(formatC(Nhat.mcds,digits=4)," (se = ",formatC(Nhat.se.mcds,digits=2),")",sep="")
 paste(formatC(Nhat.mixed,digits=4)," (se = ",formatC(Nhat.se.mixed,digits=2),")",sep="")
+}
 }
 \keyword{datasets}
 

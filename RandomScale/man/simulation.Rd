@@ -3,11 +3,12 @@
 \alias{simulation}
 \title{Simulation in Oedekoven et al}
 \description{
-The following is the code used to generate the simulation results in the paper.  To produce the
-same results set nreps=5 to nreps=500. It will likely take about 10 hours to run all of the simulations
-depending on your computer. We have set nreps to 5 to reduce time for computation with the example.
+The following is the code used to generate the simulation results in the paper. It will likely take about 10 hours to run all of the simulations
+depending on your computer.
 }
 \examples{
+\dontrun{
+require(mrds)
 #define function for simulations
 tsims=function(N=4000,df=3,w=40,nreps=100,plot=TRUE,hz=FALSE,
              tdf=TRUE,hzscale=1,hzpow=2,sigma=1)
@@ -119,7 +120,7 @@ sim_summary=function(z)
   return(res)
 }
 # perform simulations
-nreps=5
+nreps=500
 set.seed(93851)
 t.df3.n180=tsims(plot=F,nreps=nreps)
 t.df5.n180=tsims(df=5,plot=F,nreps=nreps)
@@ -155,9 +156,16 @@ colnames(sim_results)[12]="$RMSE_{HR}$"
 colnames(sim_results)[13]="$RMSE_{AVG}$"
 #commented out code that produces table in paper
 #library(xtable)
-#print(xtable(sim_results,caption="Percent relative bias (PRB) and root mean square error (RMSE) as proportion of true abundance for random scale half-normal and hazard rate detection function models for distances generated from t-distribution, random scale half-normal and hazard rate detection functions. Each value is the summary for 100 replicate simulations. The subscripts F, G and HR refer to the likelihoods eq (6), eq (9) and the hazard rate. AVG subscript represents the values in which the estimate was generated from the model that had the lowest AIC for each replicate.",
+#print(xtable(sim_results,caption=paste("Percent relative bias (PRB) and root mean",
+#" square error (RMSE) as proportion of true abundance for random scale half-normal",
+#" and hazard rate detection function models for distances generated from t-distribution,
+#" random scale half-normal and hazard rate detection functions. Each value is the summary",
+#" for 100 replicate simulations. The subscripts F, G and HR refer to the likelihoods eq (6),",
+#" eq (9) and the hazard rate. AVG subscript represents the values in which the estimate was",
+#" generated from the model that had the lowest AIC for each replicate.",
 #label="simresults",align=c("c","c",rep("r",12))),
 #caption.placement="top",latex.environments="center",size="scriptsize",include.rownames=FALSE,
 #sanitize.colnames.function = function(x){x}, sanitize.text.function=function(x){x})
+}
 }
 
